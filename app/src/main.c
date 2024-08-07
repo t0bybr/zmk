@@ -47,10 +47,7 @@ void main(void) {
 #ifdef CONFIG_ZMK_MOUSE
     zmk_mouse_init();
 #endif /* CONFIG_ZMK_MOUSE */
-<<<<<<< HEAD
 
 
     return 0;
-=======
->>>>>>> mouse-pim447/mouse-pim447
 }

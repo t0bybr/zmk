@@ -389,12 +389,9 @@ menu "Mouse Options"
 
 rsource "src/mouse/Kconfig"
 
-<<<<<<< HEAD
 config ZMK_MOUSE
     bool "Enable ZMK mouse emulation"
 
-=======
->>>>>>> mouse-pim447/mouse-pim447
 #Mouse Options
 endmenu
 

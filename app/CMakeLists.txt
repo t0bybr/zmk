@@ -26,11 +26,7 @@ target_sources(app PRIVATE src/activity.c)
 target_sources(app PRIVATE src/behavior.c)
 target_sources_ifdef(CONFIG_ZMK_KSCAN_SIDEBAND_BEHAVIORS app PRIVATE src/kscan_sideband_behaviors.c)
 target_sources(app PRIVATE src/matrix_transform.c)
-<<<<<<< HEAD
 target_sources(app PRIVATE src/physical_layouts.c)
-=======
-target_sources(app PRIVATE src/hid.c)
->>>>>>> mouse-pim447/mouse-pim447
 target_sources(app PRIVATE src/mouse/key_listener.c)
 target_sources(app PRIVATE src/mouse/main.c)
 target_sources(app PRIVATE src/mouse/tick_listener.c)
@@ -71,7 +67,6 @@ if ((NOT CONFIG_ZMK_SPLIT) OR CONFIG_ZMK_SPLIT_ROLE_CENTRAL)
   target_sources(app PRIVATE src/behaviors/behavior_transparent.c)
   target_sources(app PRIVATE src/behaviors/behavior_none.c)
   target_sources(app PRIVATE src/behaviors/behavior_sensor_rotate_key_press.c)
-<<<<<<< HEAD
   target_sources_ifdef(CONFIG_ZMK_BEHAVIOR_SENSOR_ROTATE app PRIVATE src/behaviors/behavior_sensor_rotate.c)
   target_sources_ifdef(CONFIG_ZMK_BEHAVIOR_SENSOR_ROTATE_VAR app PRIVATE src/behaviors/behavior_sensor_rotate_var.c)
   target_sources_ifdef(CONFIG_ZMK_BEHAVIOR_SENSOR_ROTATE_COMMON app PRIVATE src/behaviors/behavior_sensor_rotate_common.c)
@@ -80,13 +75,6 @@ if ((NOT CONFIG_ZMK_SPLIT) OR CONFIG_ZMK_SPLIT_ROLE_CENTRAL)
   target_sources(app PRIVATE src/behaviors/behavior_mouse_move.c)
   target_sources(app PRIVATE src/behaviors/behavior_mouse_scroll.c)
   target_sources(app PRIVATE src/behaviors/behavior_trackball_pim447.c)
-=======
-  target_sources(app PRIVATE src/behaviors/behavior_mouse_key_press.c)
-  target_sources(app PRIVATE src/behaviors/behavior_mouse_move.c)
-  target_sources(app PRIVATE src/behaviors/behavior_mouse_scroll.c)
-  target_sources(app PRIVATE src/behaviors/behavior_trackball_pim447.c)
-  target_sources_ifdef(CONFIG_ZMK_EXT_POWER app PRIVATE src/behaviors/behavior_ext_power.c)
->>>>>>> mouse-pim447/mouse-pim447
   target_sources(app PRIVATE src/combo.c)
   target_sources(app PRIVATE src/behaviors/behavior_tap_dance.c)
   target_sources(app PRIVATE src/behavior_queue.c)

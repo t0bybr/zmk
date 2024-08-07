@@ -46,7 +46,6 @@ This behavior can press/release up to 16 mouse buttons.
 ### Behavior Binding
 
 - Reference: `&mkp`
-<<<<<<< HEAD
 - Parameter: A `uint8` with bits 0 through 4 each referring to a button.
 
 The following defines can be passed for the parameter:
@@ -64,8 +63,6 @@ Mouse buttons 4 and 5 typically map to "back" and "forward" actions in most appl
 ### Examples
 
 The following will send a left click press when the binding is triggered:
-=======
->>>>>>> mouse-pim447/mouse-pim447
 - Parameter: A `uint16` with each bit referring to a button.
 
 Example:

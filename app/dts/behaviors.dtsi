@@ -15,16 +15,12 @@
 #include <behaviors/bluetooth.dtsi>
 #include <behaviors/ext_power.dtsi>
 #include <behaviors/outputs.dtsi>
-<<<<<<< HEAD
 #include <behaviors/caps_word.dtsi>
 #include <behaviors/key_repeat.dtsi>
 #include <behaviors/backlight.dtsi>
 #include <behaviors/macros.dtsi>
 #include <behaviors/mouse_key_press.dtsi>
 #include <behaviors/soft_off.dtsi>
-=======
-#include <behaviors/mouse_key_press.dtsi>
->>>>>>> mouse-pim447/mouse-pim447
 #include <behaviors/mouse_move.dtsi>
 #include <behaviors/mouse_scroll.dtsi>
 #include <behaviors/trackball_pim447.dtsi>

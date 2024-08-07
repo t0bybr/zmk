@@ -20,15 +20,8 @@ struct zmk_mouse_button_state_changed {
 
 ZMK_EVENT_DECLARE(zmk_mouse_button_state_changed);
 
-<<<<<<< HEAD
 static inline int raise_zmk_mouse_button_state_changed_from_encoded(uint32_t encoded, bool pressed,
                                                                     int64_t timestamp) {
     return raise_zmk_mouse_button_state_changed((struct zmk_mouse_button_state_changed){
         .buttons = ZMK_HID_USAGE_ID(encoded), .state = pressed, .timestamp = timestamp});
-=======
-static inline struct zmk_mouse_button_state_changed_event *
-zmk_mouse_button_state_changed_from_encoded(uint32_t encoded, bool pressed, int64_t timestamp) {
-    return new_zmk_mouse_button_state_changed((struct zmk_mouse_button_state_changed){
-        .buttons = HID_USAGE_ID(encoded), .state = pressed, .timestamp = timestamp});
->>>>>>> mouse-pim447/mouse-pim447
 }

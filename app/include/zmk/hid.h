@@ -16,7 +16,6 @@
 #include <dt-bindings/zmk/hid_usage.h>
 #include <dt-bindings/zmk/hid_usage_pages.h>
 
-<<<<<<< HEAD
 #define ZMK_HID_KEYBOARD_NKRO_MAX_USAGE HID_USAGE_KEY_KEYPAD_EQUAL
 
 #define ZMK_HID_MOUSE_NUM_BUTTONS 0x05
@@ -54,9 +53,7 @@
 #define ZMK_HID_REPORT_ID_LEDS 0x01
 #define ZMK_HID_REPORT_ID_CONSUMER 0x02
 #define ZMK_HID_REPORT_ID_MOUSE 0x03
-=======
 #define COLLECTION_REPORT 0x03
->>>>>>> mouse-pim447/mouse-pim447
 
 static const uint8_t zmk_hid_report_desc[] = {
     HID_USAGE_PAGE(HID_USAGE_GEN_DESKTOP),
@@ -318,7 +315,6 @@ struct zmk_hid_mouse_report {
     struct zmk_hid_mouse_report_body body;
 } __packed;
 
-<<<<<<< HEAD
 struct zmk_hid_mouse_report_body {
     zmk_mouse_button_flags_t buttons;
     int16_t x;
@@ -361,9 +357,6 @@ struct zmk_hid_mouse_report {
 #endif // IS_ENABLED(CONFIG_ZMK_MOUSE)
 
 zmk_mod_flags_t zmk_hid_get_explicit_mods(void);
-=======
-zmk_mod_flags_t zmk_hid_get_explicit_mods();
->>>>>>> mouse-pim447/mouse-pim447
 int zmk_hid_register_mod(zmk_mod_t modifier);
 int zmk_hid_unregister_mod(zmk_mod_t modifier);
 bool zmk_hid_mod_is_pressed(zmk_mod_t modifier);
