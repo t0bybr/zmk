@@ -10,7 +10,7 @@
 #include <drivers/sensor.h>
 
 #define LOG_LEVEL CONFIG_SENSOR_LOG_LEVEL
-#include <logging/log.h>
+#include <zephyr/logging/log.h>
 LOG_MODULE_REGISTER(trackball_pim447);
 
 #define TRACKBALL_PIM447_REG_LEFT   0x04

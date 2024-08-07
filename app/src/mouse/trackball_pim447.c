@@ -5,7 +5,7 @@
  */
 
 #include <drivers/sensor.h>
-#include <logging/log.h>
+#include <zephyr/logging/log.h>
 #include <zmk/hid.h>
 #include <zmk/endpoints.h>
 #include <zmk/trackball_pim447.h>
