@@ -227,6 +227,10 @@ config ZMK_BLE_MOUSE_REPORT_QUEUE_SIZE
 	int "Max number of mouse HID reports to queue for sending over BLE"
 	default 20
 
+config ZMK_BLE_MOUSE_REPORT_QUEUE_SIZE
+	int "Max number of mouse HID reports to queue for sending over BLE"
+	default 20
+
 config ZMK_BLE_CLEAR_BONDS_ON_START
     bool "Configuration that clears all bond information from the keyboard on startup."
 
@@ -385,9 +389,12 @@ menu "Mouse Options"
 
 rsource "src/mouse/Kconfig"
 
+<<<<<<< HEAD
 config ZMK_MOUSE
     bool "Enable ZMK mouse emulation"
 
+=======
+>>>>>>> mouse-pim447/mouse-pim447
 #Mouse Options
 endmenu
 
