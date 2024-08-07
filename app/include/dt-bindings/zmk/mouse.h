@@ -23,15 +23,11 @@
 #define MB4 BIT(3)
 #define MB5 BIT(4)
 
-#define MB4 BIT(5)
+#define MB6 BIT(5)
 
-#define MB5 BIT(6)
+#define MB7 BIT(6)
 
-#define MB6 BIT(7)
-
-#define MB7 BIT(8)
-
-#define MB8 BIT(9)
+#define MB8 BIT(7)
 
 /* Mouse move behavior */
 #define MOVE_VERT(vert) ((vert)&0xFFFF)

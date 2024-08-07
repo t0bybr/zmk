@@ -12,11 +12,18 @@
 #include <zephyr/usb/class/usb_hid.h>
 
 #include <zmk/keys.h>
+#if IS_ENABLED(CONFIG_ZMK_MOUSE)
 #include <zmk/mouse.h>
+#endif // IS_ENABLED(CONFIG_ZMK_MOUSE)
+
 #include <dt-bindings/zmk/hid_usage.h>
 #include <dt-bindings/zmk/hid_usage_pages.h>
 
+#if IS_ENABLED(CONFIG_ZMK_HID_KEYBOARD_NKRO_EXTENDED_REPORT)
+#define ZMK_HID_KEYBOARD_NKRO_MAX_USAGE HID_USAGE_KEY_KEYBOARD_LANG8
+#else
 #define ZMK_HID_KEYBOARD_NKRO_MAX_USAGE HID_USAGE_KEY_KEYPAD_EQUAL
+#endif
 
 #define ZMK_HID_MOUSE_NUM_BUTTONS 0x05
 
@@ -53,7 +60,6 @@
 #define ZMK_HID_REPORT_ID_LEDS 0x01
 #define ZMK_HID_REPORT_ID_CONSUMER 0x02
 #define ZMK_HID_REPORT_ID_MOUSE 0x03
-#define COLLECTION_REPORT 0x03
 
 static const uint8_t zmk_hid_report_desc[] = {
     HID_USAGE_PAGE(HID_USAGE_GEN_DESKTOP),
@@ -135,131 +141,62 @@ static const uint8_t zmk_hid_report_desc[] = {
 #else
 #error "A proper consumer HID report usage range must be selected"
 #endif
-    /* REPORT_COUNT (CONFIG_ZMK_HID_CONSUMER_REPORT_SIZE) */
-    HID_GI_REPORT_COUNT,
-    CONFIG_ZMK_HID_CONSUMER_REPORT_SIZE,
-    HID_MI_INPUT,
-    0x00,
-    /* END COLLECTION */
-    HID_MI_COLLECTION_END,
+    HID_REPORT_COUNT(CONFIG_ZMK_HID_CONSUMER_REPORT_SIZE),
+    HID_INPUT(ZMK_HID_MAIN_VAL_DATA | ZMK_HID_MAIN_VAL_ARRAY | ZMK_HID_MAIN_VAL_ABS),
+    HID_END_COLLECTION,
 
-    /* USAGE_PAGE (Generic Desktop) */
-    HID_GI_USAGE_PAGE,
-    HID_USAGE_GD,
-    /* USAGE (Mouse) */
-    HID_LI_USAGE,
-    HID_USAGE_GD_MOUSE,
-    /* COLLECTION (Application) */
-    HID_MI_COLLECTION,
-    COLLECTION_APPLICATION,
-    /* REPORT ID (4) */
-    HID_GI_REPORT_ID,
-    0x04,
-    /* USAGE (Pointer) */
-    HID_LI_USAGE,
-    HID_USAGE_GD_POINTER,
-    /* COLLECTION (Physical) */
-    HID_MI_COLLECTION,
-    COLLECTION_PHYSICAL,
-    /* USAGE_PAGE (Button) */
-    HID_GI_USAGE_PAGE,
-    HID_USAGE_BUTTON,
-    /* USAGE_MINIMUM (0x1) (button 1?) */
-    HID_LI_USAGE_MIN(1),
-    0x1,
-    /* USAGE_MAXIMUM (0x10) (button 5? Buttons up to 8 still work) */
-    HID_LI_USAGE_MAX(1),
-    0x10,
-    /* LOGICAL_MINIMUM (0) */
-    HID_GI_LOGICAL_MIN(1),
-    0x00,
-    /* LOGICAL_MAXIMUM (1) */
-    HID_GI_LOGICAL_MAX(1),
-    0x01,
-    /* REPORT_SIZE (1) */
-    HID_GI_REPORT_SIZE,
-    0x01,
-    /* REPORT_COUNT (16) */
-    HID_GI_REPORT_COUNT,
-    0x10,
-    /* INPUT (Data,Var,Abs) */
-    HID_MI_INPUT,
-    0x02,
-    /* USAGE_PAGE (Generic Desktop) */
-    HID_GI_USAGE_PAGE,
-    HID_USAGE_GD,
-    /* LOGICAL_MINIMUM (-32767) */
-    HID_GI_LOGICAL_MIN(2),
-    0x01,
-    0x80,
-    /* LOGICAL_MAXIMUM (32767) */
-    HID_GI_LOGICAL_MAX(2),
-    0xFF,
-    0x7F,
-    /* REPORT_SIZE (16) */
-    HID_GI_REPORT_SIZE,
-    0x10,
-    /* REPORT_COUNT (2) */
-    HID_GI_REPORT_COUNT,
-    0x02,
-    /* USAGE (X) */ // Vertical scroll
-    HID_LI_USAGE,
-    HID_USAGE_GD_X,
-    /* USAGE (Y) */
-    HID_LI_USAGE,
-    HID_USAGE_GD_Y,
-    /* Input (Data,Var,Rel) */
-    HID_MI_INPUT,
-    0x06,
-    /* LOGICAL_MINIMUM (-127) */
-    HID_GI_LOGICAL_MIN(1),
-    0x81,
-    /* LOGICAL_MAXIMUM (127) */
-    HID_GI_LOGICAL_MAX(1),
-    0x7F,
-    /* REPORT_SIZE (8) */
-    HID_GI_REPORT_SIZE,
-    0x08,
-    /* REPORT_COUNT (1) */
-    HID_GI_REPORT_COUNT,
-    0x01,
-    /* USAGE (Wheel) */
-    HID_LI_USAGE,
-    HID_USAGE_GD_WHEEL,
-    /* Input (Data,Var,Rel) */
-    HID_MI_INPUT,
-    0x06,
-    /* USAGE_PAGE (Consumer) */ // Horizontal scroll
-    HID_GI_USAGE_PAGE,
-    HID_USAGE_CONSUMER,
-    /* USAGE (AC Pan) */
-    0x0A,
-    0x38,
-    0x02,
-    /* LOGICAL_MINIMUM (-127) */
-    HID_GI_LOGICAL_MIN(1),
-    0x81,
-    /* LOGICAL_MAXIMUM (127) */
-    HID_GI_LOGICAL_MAX(1),
-    0x7F,
-    /* REPORT_COUNT (1) */
-    HID_GI_REPORT_COUNT,
-    0x01,
-    /* Input (Data,Var,Rel) */
-    HID_MI_INPUT,
-    0x06,
-    /* END COLLECTION */
-    HID_MI_COLLECTION_END,
-    /* END COLLECTION */
-    HID_MI_COLLECTION_END,
+#if IS_ENABLED(CONFIG_ZMK_MOUSE)
+    HID_USAGE_PAGE(HID_USAGE_GD),
+    HID_USAGE(HID_USAGE_GD_MOUSE),
+    HID_COLLECTION(HID_COLLECTION_APPLICATION),
+    HID_REPORT_ID(ZMK_HID_REPORT_ID_MOUSE),
+    HID_USAGE(HID_USAGE_GD_POINTER),
+    HID_COLLECTION(HID_COLLECTION_PHYSICAL),
+    HID_USAGE_PAGE(HID_USAGE_BUTTON),
+    HID_USAGE_MIN8(0x1),
+    HID_USAGE_MAX8(ZMK_HID_MOUSE_NUM_BUTTONS),
+    HID_LOGICAL_MIN8(0x00),
+    HID_LOGICAL_MAX8(0x01),
+    HID_REPORT_SIZE(0x01),
+    HID_REPORT_COUNT(0x5),
+    HID_INPUT(ZMK_HID_MAIN_VAL_DATA | ZMK_HID_MAIN_VAL_VAR | ZMK_HID_MAIN_VAL_ABS),
+    // Constant padding for the last 3 bits.
+    HID_REPORT_SIZE(0x03),
+    HID_REPORT_COUNT(0x01),
+    HID_INPUT(ZMK_HID_MAIN_VAL_CONST | ZMK_HID_MAIN_VAL_VAR | ZMK_HID_MAIN_VAL_ABS),
+    // Some OSes ignore pointer devices without X/Y data.
+    HID_USAGE_PAGE(HID_USAGE_GEN_DESKTOP),
+    HID_USAGE(HID_USAGE_GD_X),
+    HID_USAGE(HID_USAGE_GD_Y),
+    HID_USAGE(HID_USAGE_GD_WHEEL),
+    HID_LOGICAL_MIN8(-0x7F),
+    HID_LOGICAL_MAX8(0x7F),
+    HID_REPORT_SIZE(0x08),
+    HID_REPORT_COUNT(0x03),
+    HID_INPUT(ZMK_HID_MAIN_VAL_DATA | ZMK_HID_MAIN_VAL_VAR | ZMK_HID_MAIN_VAL_REL),
+    HID_END_COLLECTION,
+    HID_END_COLLECTION,
+#endif // IS_ENABLED(CONFIG_ZMK_MOUSE)
 };
 
-// struct zmk_hid_boot_report
-// {
-//     uint8_t modifiers;
-//     uint8_t _unused;
-//     uint8_t keys[6];
-// } __packed;
+#if IS_ENABLED(CONFIG_ZMK_USB_BOOT)
+
+#define HID_ERROR_ROLLOVER 0x1
+#define HID_BOOT_KEY_LEN 6
+
+#if IS_ENABLED(CONFIG_ZMK_HID_REPORT_TYPE_HKRO) &&                                                 \
+    CONFIG_ZMK_HID_KEYBOARD_REPORT_SIZE == HID_BOOT_KEY_LEN
+typedef struct zmk_hid_keyboard_report_body zmk_hid_boot_report_t;
+#else
+struct zmk_hid_boot_report {
+    zmk_mod_flags_t modifiers;
+    uint8_t _reserved;
+    uint8_t keys[HID_BOOT_KEY_LEN];
+} __packed;
+
+typedef struct zmk_hid_boot_report zmk_hid_boot_report_t;
+#endif
+#endif
 
 struct zmk_hid_keyboard_report_body {
     zmk_mod_flags_t modifiers;
@@ -302,45 +239,6 @@ struct zmk_hid_consumer_report {
     struct zmk_hid_consumer_report_body body;
 } __packed;
 
-struct zmk_hid_mouse_report_body {
-    zmk_mouse_button_flags_t buttons;
-    int16_t x;
-    int16_t y;
-    int8_t scroll_y;
-    int8_t scroll_x;
-} __packed;
-
-struct zmk_hid_mouse_report {
-    uint8_t report_id;
-    struct zmk_hid_mouse_report_body body;
-} __packed;
-
-struct zmk_hid_mouse_report_body {
-    zmk_mouse_button_flags_t buttons;
-    int16_t x;
-    int16_t y;
-    int8_t scroll_y;
-    int8_t scroll_x;
-} __packed;
-
-struct zmk_hid_mouse_report {
-    uint8_t report_id;
-    struct zmk_hid_mouse_report_body body;
-} __packed;
-
-struct zmk_hid_mouse_report_body {
-    zmk_mouse_button_flags_t buttons;
-    int16_t x;
-    int16_t y;
-    int8_t scroll_y;
-    int8_t scroll_x;
-} __packed;
-
-struct zmk_hid_mouse_report {
-    uint8_t report_id;
-    struct zmk_hid_mouse_report_body body;
-} __packed;
-
 #if IS_ENABLED(CONFIG_ZMK_MOUSE)
 struct zmk_hid_mouse_report_body {
     zmk_mouse_button_flags_t buttons;
@@ -375,18 +273,28 @@ bool zmk_hid_keyboard_is_pressed(zmk_key_t key);
 
 int zmk_hid_consumer_press(zmk_key_t key);
 int zmk_hid_consumer_release(zmk_key_t key);
-void zmk_hid_consumer_clear();
+void zmk_hid_consumer_clear(void);
+bool zmk_hid_consumer_is_pressed(zmk_key_t key);
 
+int zmk_hid_press(uint32_t usage);
+int zmk_hid_release(uint32_t usage);
+bool zmk_hid_is_pressed(uint32_t usage);
+
+#if IS_ENABLED(CONFIG_ZMK_MOUSE)
 int zmk_hid_mouse_button_press(zmk_mouse_button_t button);
 int zmk_hid_mouse_button_release(zmk_mouse_button_t button);
 int zmk_hid_mouse_buttons_press(zmk_mouse_button_flags_t buttons);
 int zmk_hid_mouse_buttons_release(zmk_mouse_button_flags_t buttons);
-void zmk_hid_mouse_movement_set(int16_t x, int16_t y);
-void zmk_hid_mouse_scroll_set(int8_t x, int8_t y);
-void zmk_hid_mouse_movement_update(int16_t x, int16_t y);
-void zmk_hid_mouse_scroll_update(int8_t x, int8_t y);
-void zmk_hid_mouse_clear();
+void zmk_hid_mouse_clear(void);
+#endif // IS_ENABLED(CONFIG_ZMK_MOUSE)
 
-struct zmk_hid_keyboard_report *zmk_hid_get_keyboard_report();
-struct zmk_hid_consumer_report *zmk_hid_get_consumer_report();
+struct zmk_hid_keyboard_report *zmk_hid_get_keyboard_report(void);
+struct zmk_hid_consumer_report *zmk_hid_get_consumer_report(void);
+
+#if IS_ENABLED(CONFIG_ZMK_USB_BOOT)
+zmk_hid_boot_report_t *zmk_hid_get_boot_report();
+#endif
+
+#if IS_ENABLED(CONFIG_ZMK_MOUSE)
 struct zmk_hid_mouse_report *zmk_hid_get_mouse_report();
+#endif // IS_ENABLED(CONFIG_ZMK_MOUSE)
