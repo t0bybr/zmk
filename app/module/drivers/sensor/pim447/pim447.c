@@ -7,28 +7,34 @@
 
 #include "pim447.h"
 
+LOG_MODULE_REGISTER(periodic_log, CONFIG_LOG_DEFAULT_LEVEL);
 
-LOG_MODULE_REGISTER(my_driver, CONFIG_MY_DRIVER_LOG_LEVEL);
+// Define a timer
+static struct k_timer periodic_timer;
 
-static void delayed_log_work_handler(struct k_work *work)
+// Timer expiry function
+static void timer_expiry_function(struct k_timer *timer_id)
 {
-    LOG_INF("Driver loaded successfully - delayed message after 10 seconds");
+    LOG_INF("Periodic log message every 3 seconds");
 }
 
-K_WORK_DEFINE(delayed_log_work, delayed_log_work_handler);
-
-static int my_driver_init(const struct device *dev)
+// Function to start the periodic logging
+void start_periodic_logging(void)
 {
-    LOG_INF("Driver initialization started");
+    // Initialize the timer
+    k_timer_init(&periodic_timer, timer_expiry_function, NULL);
 
-    // Schedule the delayed work
-    k_work_schedule_for_queue(&k_sys_work_q, &delayed_log_work, K_SECONDS(10));
+    // Start the timer to expire every 3 seconds
+    k_timer_start(&periodic_timer, K_SECONDS(3), K_SECONDS(3));
 
-    LOG_INF("Driver initialization completed");
-    return 0;
+    LOG_INF("Periodic logging started");
 }
 
-SYS_INIT(my_driver_init, APPLICATION, CONFIG_APPLICATION_INIT_PRIORITY);
+
+// Call this function in your initialization or main loop
+SYS_INIT(start_periodic_logging, APPLICATION, CONFIG_APPLICATION_INIT_PRIORITY);
+
+
 
 // Register addresses
 enum {
@@ -74,9 +80,6 @@ int pim447_init(const struct device *dev) {
     const struct pim447_config *drv_cfg = dev->config;
     uint8_t chip_id_h, chip_id_l;
     uint16_t chip_id;
-    k_sleep(K_SECONDS(10));  // Delay for 10 seconds
-
-    LOG_INF("Initializing PIM447");
 
     // // Read chip ID
     // i2c_reg_read_byte(config->i2c_dev, config->i2c_addr, REG_CHIP_ID_H, &chip_id_h);
