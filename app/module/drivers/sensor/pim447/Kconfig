@@ -1,9 +1,9 @@
 # 2024 t0bybr
 
-menuconfig PIM447
+menuconfig ZMK_SENSOR_PIM447
     bool "PIM447 Trackball"
     default y
-    depends on GPIO && I2C
+    depends on ZMK_SENSORS && GPIO && I2C
     help
       Enable driver for PIM447 Trackball.
 
