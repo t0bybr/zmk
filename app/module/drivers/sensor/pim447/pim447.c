@@ -7,6 +7,29 @@
 
 #include "pim447.h"
 
+
+LOG_MODULE_REGISTER(my_driver, CONFIG_MY_DRIVER_LOG_LEVEL);
+
+static void delayed_log_work_handler(struct k_work *work)
+{
+    LOG_INF("Driver loaded successfully - delayed message after 10 seconds");
+}
+
+K_WORK_DEFINE(delayed_log_work, delayed_log_work_handler);
+
+static int my_driver_init(const struct device *dev)
+{
+    LOG_INF("Driver initialization started");
+
+    // Schedule the delayed work
+    k_work_schedule_for_queue(&k_sys_work_q, &delayed_log_work, K_SECONDS(10));
+
+    LOG_INF("Driver initialization completed");
+    return 0;
+}
+
+SYS_INIT(my_driver_init, APPLICATION, CONFIG_APPLICATION_INIT_PRIORITY);
+
 // Register addresses
 enum {
     REG_LED_RED     = 0x00,
