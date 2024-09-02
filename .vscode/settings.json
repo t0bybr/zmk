@@ -18,5 +18,17 @@
   "[css][json][jsonc][html][markdown][yaml]": {
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "esbenp.prettier-vscode"
-  }
+  },
+  "workbench.colorCustomizations": {
+    "panel.border": "#f8dbde",
+    "sash.hoverBorder": "#f8dbde",
+    "sideBar.border": "#f8dbde",
+    "statusBar.background": "#f0b0b6",
+    "statusBar.foreground": "#15202b",
+    "statusBarItem.hoverBackground": "#e8858e",
+    "statusBarItem.remoteBackground": "#f0b0b6",
+    "statusBarItem.remoteForeground": "#15202b",
+    "tab.activeBorder": "#f8dbde"
+  },
+  "peacock.remoteColor": "#f0b0b6"
 }
