@@ -7,6 +7,8 @@
 
 #include "pim447.h"
 
+// Define and register the module log
+LOG_MODULE_REGISTER(pim447, CONFIG_SENSOR_LOG_LEVEL);
 
 // Register addresses
 enum {
@@ -149,7 +151,7 @@ static int pim447_set_rgbw(const struct device *dev, uint8_t r, uint8_t g, uint8
                           &pim447_data_##n, &pim447_cfg_##n,        \
                           POST_KERNEL, CONFIG_SENSOR_INIT_PRIORITY, \
                           &pim447_driver_api);
-                          
+
 DT_INST_FOREACH_STATUS_OKAY(PIM447_INIT)
 
 static int check_trackball_status(const struct device *dev)
