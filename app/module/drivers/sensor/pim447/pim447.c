@@ -52,7 +52,7 @@ static const struct sensor_driver_api pim447_driver_api = {
 
 
 int pim447_init(const struct device *dev) {
-    struct pim447_data *drv_data = dev->data;
+    // struct pim447_data *drv_data = dev->data;
     const struct pim447_config *drv_cfg = dev->config;
     uint8_t chip_id_h, chip_id_l;
     uint16_t chip_id;
@@ -87,7 +87,7 @@ int pim447_init(const struct device *dev) {
 
 static int pim447_sample_fetch(const struct device *dev, enum sensor_channel chan)
 {
-    struct pim447_data *data = dev->data;
+    // struct pim447_data *data = dev->data;
     const struct pim447_config *config = dev->config;
 
     // Implement the logic to fetch samples from the sensor
@@ -98,7 +98,7 @@ static int pim447_sample_fetch(const struct device *dev, enum sensor_channel cha
 static int pim447_channel_get(const struct device *dev, enum sensor_channel chan,
                               struct sensor_value *val)
 {
-    struct pim447_data *data = dev->data;
+    // struct pim447_data *data = dev->data;
     const struct pim447_config *config = dev->config;
 
     // Implement the logic to get channel data
@@ -124,9 +124,9 @@ static int pim447_channel_get(const struct device *dev, enum sensor_channel chan
 //     return 0;
 // }
 
-static int pim447_set_rgbw(const struct device *dev, uint8_t r, uint8_t g, uint8_t b, uint8_t w)
+int pim447_set_rgbw(const struct device *dev, uint8_t r, uint8_t g, uint8_t b, uint8_t w)
 {
-    struct pim447_data *data = dev->data;
+    // struct pim447_data *data = dev->data;
     const struct pim447_config *config = dev->config;
 
     i2c_reg_write_byte(config->i2c_dev, config->i2c_addr, REG_LED_RED, r);

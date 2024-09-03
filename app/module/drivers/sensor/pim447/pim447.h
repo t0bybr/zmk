@@ -30,7 +30,7 @@ struct pim447_config {
 };
 
 struct pim447_data {
-    struct pim447_config config;
+    struct pim447_state state;
 };
 
 
