@@ -8,37 +8,6 @@
 #include "pim447.h"
 
 
-LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
-
-LOG_MODULE_REGISTER(periodic_log, CONFIG_LOG_DEFAULT_LEVEL);
-
-// Define a timer
-static struct k_timer periodic_timer;
-
-// Timer expiry function
-static void timer_expiry_function(struct k_timer *timer_id)
-{
-    LOG_INF("Periodic log message every 3 seconds");
-}
-
-// Function to start the periodic logging
-void start_periodic_logging(void)
-{
-    // Initialize the timer
-    k_timer_init(&periodic_timer, timer_expiry_function, NULL);
-
-    // Start the timer to expire every 3 seconds
-    k_timer_start(&periodic_timer, K_SECONDS(3), K_SECONDS(3));
-
-    LOG_INF("Periodic logging started");
-}
-
-
-// Call this function in your initialization or main loop
-SYS_INIT(start_periodic_logging, APPLICATION, CONFIG_APPLICATION_INIT_PRIORITY);
-
-
-
 // Register addresses
 enum {
     REG_LED_RED     = 0x00,
