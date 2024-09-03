@@ -57,6 +57,9 @@ int pim447_init(const struct device *dev) {
     uint8_t chip_id_h, chip_id_l;
     uint16_t chip_id;
 
+
+    k_sleep(K_SECONDS(10));  // Delay for 10 seconds
+
     LOG_DBG("PIM447 init");
 
 
