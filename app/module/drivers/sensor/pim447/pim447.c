@@ -41,7 +41,9 @@ enum {
 
 // Define the driver API
 static const struct sensor_driver_api pim447_driver_api = {
-    .init = pim447_init,
+    .sample_fetch = pim447_sample_fetch,
+    .channel_get = pim447_channel_get,
+    // .init = pim447_init,
     // .read = pim447_read,
     // .set_rgbw = pim447_set_rgbw,
 };
@@ -53,16 +55,20 @@ int pim447_init(const struct device *dev) {
     uint8_t chip_id_h, chip_id_l;
     uint16_t chip_id;
 
-    log_debug("PIM447 init");
-    device_set_binding(dev, "probed");
+    LOG_DBG("PIM447 init");
 
 
     // Read chip ID
-    i2c_reg_read_byte(config->i2c_dev, config->i2c_addr, REG_CHIP_ID_H, &chip_id_h);
-    i2c_reg_read_byte(config->i2c_dev, config->i2c_addr, REG_CHIP_ID_L, &chip_id_l);
+    if (i2c_reg_read_byte(drv_cfg->i2c_dev, drv_cfg->i2c_addr, REG_CHIP_ID_H, &chip_id_h) ||
+        i2c_reg_read_byte(drv_cfg->i2c_dev, drv_cfg->i2c_addr, REG_CHIP_ID_L, &chip_id_l)) {
+        LOG_ERR("Failed to read chip ID");
+        return -EIO;
+    }
+
     chip_id = (chip_id_h << 8) | chip_id_l;
 
     if (chip_id != CHIP_ID) {
+        LOG_ERR("Invalid chip ID: 0x%04x", chip_id);
         return -ENODEV;
     }
 
@@ -74,6 +80,27 @@ int pim447_init(const struct device *dev) {
     // int_val |= MSK_INT_OUT_EN;
     // i2c_reg_write_byte(config->i2c_dev, config->i2c_addr, REG_INT, int_val);
 
+    return 0;
+}
+
+static int pim447_sample_fetch(const struct device *dev, enum sensor_channel chan)
+{
+    struct pim447_data *data = dev->data;
+    const struct pim447_config *config = dev->config;
+
+    // Implement the logic to fetch samples from the sensor
+    // This is just a placeholder, you'll need to implement the actual logic
+    return 0;
+}
+
+static int pim447_channel_get(const struct device *dev, enum sensor_channel chan,
+                              struct sensor_value *val)
+{
+    struct pim447_data *data = dev->data;
+    const struct pim447_config *config = dev->config;
+
+    // Implement the logic to get channel data
+    // This is just a placeholder, you'll need to implement the actual logic
     return 0;
 }
 
@@ -111,16 +138,18 @@ static int pim447_set_rgbw(const struct device *dev, uint8_t r, uint8_t g, uint8
 
 // Device definition
 #define PIM447_INIT(n)                                              \
-    struct pim447_data pim447_data_##n;                             \
-    const struct pim447_config pim447_cfg_##n = {                   \
+    static struct pim447_data pim447_data_##n;                      \
+    static const struct pim447_config pim447_cfg_##n = {            \
         .i2c_dev = DEVICE_DT_GET(DT_INST_BUS(n)),                   \
         .i2c_addr = DT_INST_REG_ADDR(n),                            \
         .interrupt_pin = DT_INST_GPIO_PIN(n, int_gpios),            \
         .timeout = DT_INST_PROP_OR(n, timeout, DEFAULT_TIMEOUT),    \
     };                                                              \
-                                                          
-    DEVICE_DT_INST_DEFINE(n, pim447_init, NULL, &pim447_data_##n, &pim447_cfg_##n, POST_KERNEL,CONFIG_SENSOR_INIT_PRIORITY, &pim447_driver_api);
-
+    DEVICE_DT_INST_DEFINE(n, pim447_init, NULL,                     \
+                          &pim447_data_##n, &pim447_cfg_##n,        \
+                          POST_KERNEL, CONFIG_SENSOR_INIT_PRIORITY, \
+                          &pim447_driver_api);
+                          
 DT_INST_FOREACH_STATUS_OKAY(PIM447_INIT)
 
 static int check_trackball_status(const struct device *dev)

@@ -33,4 +33,11 @@ struct pim447_data {
     struct pim447_config config;
 };
 
+
 int pim447_init(const struct device *dev);
+
+static int pim447_sample_fetch(const struct device *dev, enum sensor_channel chan);
+static int pim447_channel_get(const struct device *dev, enum sensor_channel chan,
+                              struct sensor_value *val);
+
+int pim447_set_rgbw(const struct device *dev, uint8_t r, uint8_t g, uint8_t b, uint8_t w);
