@@ -81,6 +81,8 @@ int pim447_init(const struct device *dev) {
     uint8_t chip_id_h, chip_id_l;
     uint16_t chip_id;
 
+    log_info("PIM447 init");
+
     // Read chip ID
     i2c_reg_read_byte(config->i2c_dev, config->i2c_addr, REG_CHIP_ID_H, &chip_id_h);
     i2c_reg_read_byte(config->i2c_dev, config->i2c_addr, REG_CHIP_ID_L, &chip_id_l);
