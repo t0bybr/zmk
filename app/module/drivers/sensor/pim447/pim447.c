@@ -85,6 +85,8 @@ int pim447_init(const struct device *dev) {
     uint16_t chip_id;
 
     log_debug("PIM447 init");
+    device_set_binding(dev, "probed");
+
 
     // Read chip ID
     i2c_reg_read_byte(config->i2c_dev, config->i2c_addr, REG_CHIP_ID_H, &chip_id_h);
@@ -151,3 +153,19 @@ static int pim447_set_rgbw(const struct device *dev, uint8_t r, uint8_t g, uint8
     DEVICE_DT_INST_DEFINE(n, pim447_init, NULL, &pim447_data_##n, &pim447_cfg_##n, POST_KERNEL,CONFIG_SENSOR_INIT_PRIORITY, &pim447_driver_api);
 
 DT_INST_FOREACH_STATUS_OKAY(PIM447_INIT)
+
+static int check_trackball_status(const struct device *dev)
+{
+    ARG_UNUSED(dev);
+
+    const struct device *trackball_dev = DEVICE_DT_GET(DT_NODELABEL(trackball));
+    if (device_is_ready(trackball_dev) && device_get_binding(trackball_dev)) {
+        printk("Trackball driver loaded and initialized\n");
+    } else {
+        printk("Trackball driver not loaded or not initialized\n");
+    }
+
+    return 0;
+}
+
+SYS_INIT(check_trackball_status, APPLICATION, CONFIG_APPLICATION_INIT_PRIORITY);
