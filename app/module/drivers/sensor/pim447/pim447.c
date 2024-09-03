@@ -81,14 +81,16 @@ int pim447_init(const struct device *dev) {
     uint8_t chip_id_h, chip_id_l;
     uint16_t chip_id;
 
-    // // Read chip ID
-    // i2c_reg_read_byte(config->i2c_dev, config->i2c_addr, REG_CHIP_ID_H, &chip_id_h);
-    // i2c_reg_read_byte(config->i2c_dev, config->i2c_addr, REG_CHIP_ID_L, &chip_id_l);
-    // chip_id = (chip_id_h << 8) | chip_id_l;
+    // Read chip ID
+    i2c_reg_read_byte(config->i2c_dev, config->i2c_addr, REG_CHIP_ID_H, &chip_id_h);
+    i2c_reg_read_byte(config->i2c_dev, config->i2c_addr, REG_CHIP_ID_L, &chip_id_l);
+    chip_id = (chip_id_h << 8) | chip_id_l;
 
-    // if (chip_id != CHIP_ID) {
-    //     return -ENODEV;
-    // }
+    if (chip_id != CHIP_ID) {
+        return -ENODEV;
+    }
+
+    pim447_set_rgbw(dev, 0, 0, 0, 100);
 
     // // Enable interrupt
     // uint8_t int_val;
@@ -117,18 +119,18 @@ int pim447_init(const struct device *dev) {
 //     return 0;
 // }
 
-// static int pim447_set_rgbw(const struct device *dev, uint8_t r, uint8_t g, uint8_t b, uint8_t w)
-// {
-//     struct pim447_data *data = dev->data;
-//     const struct pim447_config *config = dev->config;
+static int pim447_set_rgbw(const struct device *dev, uint8_t r, uint8_t g, uint8_t b, uint8_t w)
+{
+    struct pim447_data *data = dev->data;
+    const struct pim447_config *config = dev->config;
 
-//     i2c_reg_write_byte(config->i2c_dev, config->i2c_addr, REG_LED_RED, r);
-//     i2c_reg_write_byte(config->i2c_dev, config->i2c_addr, REG_LED_GRN, g);
-//     i2c_reg_write_byte(config->i2c_dev, config->i2c_addr, REG_LED_BLU, b);
-//     i2c_reg_write_byte(config->i2c_dev, config->i2c_addr, REG_LED_WHT, w);
+    i2c_reg_write_byte(config->i2c_dev, config->i2c_addr, REG_LED_RED, r);
+    i2c_reg_write_byte(config->i2c_dev, config->i2c_addr, REG_LED_GRN, g);
+    i2c_reg_write_byte(config->i2c_dev, config->i2c_addr, REG_LED_BLU, b);
+    i2c_reg_write_byte(config->i2c_dev, config->i2c_addr, REG_LED_WHT, w);
 
-//     return 0;
-// }
+    return 0;
+}
 
 
 // Device definition
