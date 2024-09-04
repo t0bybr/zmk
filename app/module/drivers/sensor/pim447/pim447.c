@@ -7,6 +7,8 @@
 
 #include "pim447.h"
 
+
+
 // Define and register the module log
 LOG_MODULE_REGISTER(pim447, CONFIG_SENSOR_LOG_LEVEL);
 
