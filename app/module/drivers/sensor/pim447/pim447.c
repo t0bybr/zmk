@@ -17,7 +17,8 @@ int pim447_init(const struct device *dev)
 
     // i2c_reg_write_byte(config->i2c_dev, config->i2c_addr, 0x03, 200);
 
-   LOG_INF("PIM447 I2C device: %s", config->i2c_dev->name);
+    LOG_INF("PIM447 I2C device: %s", config->i2c_dev->name);
+    LOG_INF("PIM447 I2C SDA: %s", config->i2c_dev->sda);
     LOG_INF("PIM447 I2C address: 0x%02x", config->i2c_addr);
     LOG_INF("PIM447 initialized");
 
