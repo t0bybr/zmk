@@ -25,6 +25,7 @@ struct pim447_state {
 struct pim447_config {
     const struct device *i2c_dev;
     uint8_t i2c_addr;
+    uint32_t interrupt_gpio;
     uint32_t timeout;
 };
 

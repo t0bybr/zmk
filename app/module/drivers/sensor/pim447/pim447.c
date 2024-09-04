@@ -80,9 +80,9 @@ int pim447_init(const struct device *dev) {
 
     // Enable interrupt
     uint8_t int_val;
-    // i2c_reg_read_byte(drv_cfg->i2c_dev, drv_cfg->i2c_addr, REG_INT, &int_val);
-    // int_val |= MSK_INT_OUT_EN;
-    // i2c_reg_write_byte(drv_cfg->i2c_dev, drv_cfg->i2c_addr, REG_INT, int_val);
+    i2c_reg_read_byte(drv_cfg->i2c_dev, drv_cfg->i2c_addr, REG_INT, &int_val);
+    int_val |= MSK_INT_OUT_EN;
+    i2c_reg_write_byte(drv_cfg->i2c_dev, drv_cfg->i2c_addr, REG_INT, int_val);
 
     return 0;
 }
@@ -146,6 +146,7 @@ int pim447_set_rgbw(const struct device *dev, uint8_t r, uint8_t g, uint8_t b, u
     static const struct pim447_config pim447_cfg_##n = {            \
         .i2c_dev = DEVICE_DT_GET(DT_INST_BUS(n)),                   \
         .i2c_addr = DT_INST_REG_ADDR(n),                            \
+        .interrupt_gpio = DT_INST_GPIO_PIN(n, interrupt_gpios),     \
         .timeout = DT_INST_PROP_OR(n, timeout, DEFAULT_TIMEOUT),    \
     };                                                              \
     DEVICE_DT_INST_DEFINE(n, pim447_init, NULL,                     \
