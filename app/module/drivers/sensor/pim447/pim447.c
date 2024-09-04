@@ -1,12 +1,16 @@
 
 #define DT_DRV_COMPAT pimoroni_pim447
 
+
 #include <zephyr/kernel.h>
 #include <zephyr/drivers/sensor.h>
 #include <zephyr/logging/log.h>
 
 #include "pim447.h"
 
+#if !DT_HAS_COMPAT_STATUS_OKAY(DT_DRV_COMPAT)
+#error "No enabled nodes with compatible '"DT_DRV_COMPAT"' in the device tree"
+#endif
 
 
 // Define and register the module log
