@@ -155,3 +155,11 @@ int pim447_set_rgbw(const struct device *dev, uint8_t r, uint8_t g, uint8_t b, u
                           &pim447_driver_api);
 
 DT_INST_FOREACH_STATUS_OKAY(PIM447_INIT)
+
+static int pim447_driver_init(void)
+{
+    printk("PIM447 driver initialization function called\n");
+    return 0;
+}
+
+SYS_INIT(pim447_driver_init, APPLICATION, CONFIG_APPLICATION_INIT_PRIORITY);
