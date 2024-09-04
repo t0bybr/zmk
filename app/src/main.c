@@ -42,7 +42,7 @@ int main(void) {
 #define PIM447_I2C_ADDR 0x0A
 #define PIM447_LED_WHITE_REG 0x03
 
-static int test_pim447_led(void)
+int test_pim447_led(void)
 {
     const struct device *i2c_dev = DEVICE_DT_GET(DT_NODELABEL(i2c1));
     
