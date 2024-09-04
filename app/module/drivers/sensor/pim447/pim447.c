@@ -15,6 +15,8 @@ int pim447_init(const struct device *dev)
 {
     const struct pim447_config *config = dev->config;
 
+    i2c_reg_write_byte(config->i2c_dev, config->i2c_addr, REG_LED_WHT, 200);
+
     LOG_INF("PIM447 initialized");
 
     return 0;
