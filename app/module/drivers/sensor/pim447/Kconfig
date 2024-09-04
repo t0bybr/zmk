@@ -2,7 +2,7 @@
 
 config ZMK_SENSOR_PIM447
     bool "PIM447 Trackball"
-    # default y
+    default y
     # depends on ZMK_SENSORS && GPIO && I2C
     depends on I2C
     help
