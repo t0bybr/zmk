@@ -9,10 +9,7 @@ properties:
     required: true
     description: I2C address of the trackball
 
-  interrupt-gpios:
-    type: phandle-array
-    required: true
-    description: Interrupt pin
+
 
   led-red-gpios:
     type: phandle-array
