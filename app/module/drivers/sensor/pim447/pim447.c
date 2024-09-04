@@ -59,7 +59,7 @@ int pim447_init(const struct device *dev) {
     uint8_t chip_id_h, chip_id_l;
     uint16_t chip_id;
 
-    LOG_DBG("PIM447 init");
+    LOG_INF("PIM447 init");
 
 
     // Read chip ID
@@ -78,11 +78,11 @@ int pim447_init(const struct device *dev) {
 
     pim447_set_rgbw(dev, 0, 0, 0, 100);
 
-    // // Enable interrupt
-    // uint8_t int_val;
-    // i2c_reg_read_byte(config->i2c_dev, config->i2c_addr, REG_INT, &int_val);
-    // int_val |= MSK_INT_OUT_EN;
-    // i2c_reg_write_byte(config->i2c_dev, config->i2c_addr, REG_INT, int_val);
+    // Enable interrupt
+    uint8_t int_val;
+    i2c_reg_read_byte(config->i2c_dev, config->i2c_addr, REG_INT, &int_val);
+    int_val |= MSK_INT_OUT_EN;
+    i2c_reg_write_byte(config->i2c_dev, config->i2c_addr, REG_INT, int_val);
 
     return 0;
 }
