@@ -62,30 +62,33 @@ int pim447_init(const struct device *dev) {
     uint8_t chip_id_h, chip_id_l;
     uint16_t chip_id;
 
+    i2c_reg_write_byte(drv_cfg->i2c_dev, drv_cfg->i2c_addr, REG_LED_WHT, 200);
+
+
     LOG_INF("PIM447 init");
 
 
-    // // Read chip ID
-    // if (i2c_reg_read_byte(drv_cfg->i2c_dev, drv_cfg->i2c_addr, REG_CHIP_ID_H, &chip_id_h) ||
-    //     i2c_reg_read_byte(drv_cfg->i2c_dev, drv_cfg->i2c_addr, REG_CHIP_ID_L, &chip_id_l)) {
-    //     LOG_ERR("Failed to read chip ID");
-    //     return -EIO;
-    // }
+    // Read chip ID
+    if (i2c_reg_read_byte(drv_cfg->i2c_dev, drv_cfg->i2c_addr, REG_CHIP_ID_H, &chip_id_h) ||
+        i2c_reg_read_byte(drv_cfg->i2c_dev, drv_cfg->i2c_addr, REG_CHIP_ID_L, &chip_id_l)) {
+        LOG_ERR("Failed to read chip ID");
+        return -EIO;
+    }
 
-    // chip_id = (chip_id_h << 8) | chip_id_l;
+    chip_id = (chip_id_h << 8) | chip_id_l;
 
-    // if (chip_id != CHIP_ID) {
-    //     LOG_ERR("Invalid chip ID: 0x%04x", chip_id);
-    //     return -ENODEV;
-    // }
+    if (chip_id != CHIP_ID) {
+        LOG_ERR("Invalid chip ID: 0x%04x", chip_id);
+        return -ENODEV;
+    }
 
-    pim447_set_rgbw(dev, 0, 0, 0, 100);
+    // pim447_set_rgbw(dev, 0, 0, 0, 100);
 
-    // // Enable interrupt
-    // uint8_t int_val;
-    // i2c_reg_read_byte(drv_cfg->i2c_dev, drv_cfg->i2c_addr, REG_INT, &int_val);
-    // int_val |= MSK_INT_OUT_EN;
-    // i2c_reg_write_byte(drv_cfg->i2c_dev, drv_cfg->i2c_addr, REG_INT, int_val);
+    // Enable interrupt
+    uint8_t int_val;
+    i2c_reg_read_byte(drv_cfg->i2c_dev, drv_cfg->i2c_addr, REG_INT, &int_val);
+    int_val |= MSK_INT_OUT_EN;
+    i2c_reg_write_byte(drv_cfg->i2c_dev, drv_cfg->i2c_addr, REG_INT, int_val);
 
     return 0;
 }
