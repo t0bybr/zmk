@@ -11,16 +11,36 @@ struct pim447_config {
     uint8_t i2c_addr;
 };
 
+static void i2c_write_complete(const struct device *dev, int status)
+{
+    if (status == 0) {
+        LOG_INF("I2C write completed successfully");
+    } else {
+        LOG_ERR("I2C write failed with status: %d", status);
+    }
+}
+
 int pim447_init(const struct device *dev)
 {
     const struct pim447_config *config = dev->config;
 
-    // i2c_reg_write_byte(config->i2c_dev, config->i2c_addr, 0x03, 200);
-
     LOG_INF("PIM447 I2C device: %s", config->i2c_dev->name);
-    LOG_INF("PIM447 I2C SDA: %s", config->i2c_dev->sda);
     LOG_INF("PIM447 I2C address: 0x%02x", config->i2c_addr);
-    LOG_INF("PIM447 initialized");
+
+    uint8_t led_on_cmd[] = {0x03, 200};
+    struct i2c_msg msg = {
+        .buf = led_on_cmd,
+        .len = sizeof(led_on_cmd),
+        .flags = I2C_MSG_WRITE | I2C_MSG_STOP
+    };
+
+    int ret = i2c_transfer(config->i2c_dev, &msg, 1, config->i2c_addr);
+    if (ret < 0) {
+        LOG_ERR("Failed to initiate I2C write: %d", ret);
+        return ret;
+    }
+
+    LOG_INF("I2C write initiated");
 
     return 0;
 }
