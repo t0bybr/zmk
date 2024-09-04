@@ -80,9 +80,9 @@ int pim447_init(const struct device *dev) {
 
     // Enable interrupt
     uint8_t int_val;
-    i2c_reg_read_byte(config->i2c_dev, config->i2c_addr, REG_INT, &int_val);
+    i2c_reg_read_byte(drv_cfg->i2c_dev, drv_cfg->i2c_addr, REG_INT, &int_val);
     int_val |= MSK_INT_OUT_EN;
-    i2c_reg_write_byte(config->i2c_dev, config->i2c_addr, REG_INT, int_val);
+    i2c_reg_write_byte(drv_cfg->i2c_dev, drv_cfg->i2c_addr, REG_INT, int_val);
 
     return 0;
 }
