@@ -11,7 +11,7 @@ struct pim447_config {
     uint8_t i2c_addr;
 };
 
-static int pim447_init(const struct device *dev)
+int pim447_init(const struct device *dev)
 {
     const struct pim447_config *config = dev->config;
 
