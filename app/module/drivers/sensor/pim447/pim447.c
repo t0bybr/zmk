@@ -15,12 +15,10 @@ int pim447_init(const struct device *dev)
 {
     const struct pim447_config *config = dev->config;
 
-    int ret = i2c_reg_write_byte(config->i2c_dev, config->i2c_addr, 0x03, 200);
-    if (ret != 0) {
-        LOG_ERR("Failed to write to PIM447 register: %d", ret);
-        return ret;
-    }
-    
+    // i2c_reg_write_byte(config->i2c_dev, config->i2c_addr, 0x03, 200);
+
+    LOG_INF(config->i2c_dev);
+    LOG_INF(config->i2c_addr);
     LOG_INF("PIM447 initialized");
 
     return 0;
