@@ -5,20 +5,17 @@
 
 LOG_MODULE_REGISTER(pim447, CONFIG_SENSOR_LOG_LEVEL);
 
-#define I2C_DEV_NODE DT_NODELABEL(i2c1)  // Replace with your I2C device node label
-#define SLAVE_ADDR 0x0A  // Replace with your slave device address
-
 struct pim447_config {
     const struct device *i2c_dev;
     uint8_t i2c_addr;
 };
 
-int write_i2c_register(uint8_t reg_addr, uint8_t data)
+static int write_i2c_register(const struct device *dev, uint8_t reg_addr, uint8_t data)
 {
-    const struct device *i2c_dev = DEVICE_DT_GET(I2C_DEV_NODE);
+    const struct pim447_config *config = dev->config;
     uint8_t buf[2];
 
-    if (!device_is_ready(i2c_dev)) {
+    if (!device_is_ready(config->i2c_dev)) {
         printk("I2C device not ready\n");
         return -ENODEV;
     }
@@ -26,18 +23,17 @@ int write_i2c_register(uint8_t reg_addr, uint8_t data)
     buf[0] = reg_addr;
     buf[1] = data;
 
-    return i2c_write(i2c_dev, buf, sizeof(buf), SLAVE_ADDR);
+    return i2c_write(config->i2c_dev, buf, sizeof(buf), config->i2c_addr);
 }
 
 int pim447_init(const struct device *dev)
 {
     const struct pim447_config *config = dev->config;
-    struct pim447_data *data = dev->data;
 
     LOG_INF("PIM447 I2C device: %s", config->i2c_dev->name);
     LOG_INF("PIM447 I2C address: 0x%02x", config->i2c_addr);
 
-    int ret = write_i2c_register(0x03, 200);
+    int ret = write_i2c_register(dev, 0x03, 200);
     if (ret != 0) {
         printk("Failed to write to I2C register\n");
     }
