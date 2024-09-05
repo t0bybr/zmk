@@ -5,40 +5,28 @@
 
 LOG_MODULE_REGISTER(pim447, CONFIG_SENSOR_LOG_LEVEL);
 
+#define I2C_DEV_NODE DT_NODELABEL(i2c1)  // Replace with your I2C device node label
+#define SLAVE_ADDR 0x0A  // Replace with your slave device address
+
 struct pim447_config {
     const struct device *i2c_dev;
     uint8_t i2c_addr;
 };
 
-struct pim447_data {
-    struct k_work_delayable init_work;
-};
-
-static void i2c_write_complete(const struct device *dev, int status, void *userdata)
+int write_i2c_register(uint8_t reg_addr, uint8_t data)
 {
-    if (status == 0) {
-        LOG_INF("I2C write completed successfully");
-    } else {
-        LOG_ERR("I2C write failed with status: %d", status);
+    const struct device *i2c_dev = DEVICE_DT_GET(I2C_DEV_NODE);
+    uint8_t buf[2];
+
+    if (!device_is_ready(i2c_dev)) {
+        printk("I2C device not ready\n");
+        return -ENODEV;
     }
-}
 
-static void pim447_init_work_handler(struct k_work *work)
-{
-    struct k_work_delayable *dwork = CONTAINER_OF(work, struct k_work_delayable, work);
-    struct pim447_data *data = CONTAINER_OF(dwork, struct pim447_data, init_work);
-    const struct device *dev = CONTAINER_OF(data, struct device, data);
-    const struct pim447_config *config = dev->config;
+    buf[0] = reg_addr;
+    buf[1] = data;
 
-    uint8_t led_on_cmd[] = {0x03, 200};
-
-    int ret = i2c_write_async(config->i2c_dev, led_on_cmd, sizeof(led_on_cmd),
-                              config->i2c_addr, i2c_write_complete, NULL);
-    if (ret < 0) {
-        LOG_ERR("Failed to initiate asynchronous I2C write: %d", ret);
-    } else {
-        LOG_INF("Asynchronous I2C write initiated");
-    }
+    return i2c_write(i2c_dev, buf, sizeof(buf), SLAVE_ADDR);
 }
 
 int pim447_init(const struct device *dev)
@@ -49,8 +37,10 @@ int pim447_init(const struct device *dev)
     LOG_INF("PIM447 I2C device: %s", config->i2c_dev->name);
     LOG_INF("PIM447 I2C address: 0x%02x", config->i2c_addr);
 
-    k_work_init_delayable(&data->init_work, pim447_init_work_handler);
-    k_work_schedule(&data->init_work, K_MSEC(100));  // Schedule the work after 100ms
+    int ret = write_i2c_register(0x03, 200);
+    if (ret != 0) {
+        printk("Failed to write to I2C register\n");
+    }
 
     return 0;
 }
