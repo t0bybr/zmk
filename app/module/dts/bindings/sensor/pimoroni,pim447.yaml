@@ -2,7 +2,7 @@ description: Pimoroni Trackball
 
 compatible: "pimoroni,pim447"
 
-include: i2c-device.yaml gpio-device.yaml sensor.yaml
+include: i2c-device.yaml gpio-device.yaml sensor-device.yaml
 
 properties:
   reg:
