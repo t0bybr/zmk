@@ -30,8 +30,8 @@ int pim447_init(const struct device *dev)
 {
     const struct pim447_config *config = dev->config;
 
-    LOG_INF("PIM447 I2C device: %s", config->i2c_dev->name);
-    LOG_INF("PIM447 I2C address: 0x%02x", config->i2c_addr);
+    LOG_ERR("PIM447 I2C device: %s", config->i2c_dev->name);
+    LOG_ERR("PIM447 I2C address: 0x%02x", config->i2c_addr);
 
     int ret = write_i2c_register(dev, 0x03, 200);
     if (ret != 0) {
