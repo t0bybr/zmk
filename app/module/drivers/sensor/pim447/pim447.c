@@ -15,6 +15,9 @@ static int write_i2c_register(const struct device *dev, uint8_t reg_addr, uint8_
     const struct pim447_config *config = dev->config;
     uint8_t buf[2];
 
+        // Delay for 10 seconds
+    k_sleep(K_SECONDS(10));
+
     if (!device_is_ready(config->i2c_dev)) {
         LOG_ERR("I2C device not ready");
         return -ENODEV;
@@ -33,8 +36,7 @@ int pim447_init(const struct device *dev)
     LOG_ERR("PIM447 I2C device: %s", config->i2c_dev->name);
     LOG_ERR("PIM447 I2C address: 0x%02x", config->i2c_addr);
 
-    // Delay for 10 seconds
-    k_sleep(K_SECONDS(10));
+
 
 
 
