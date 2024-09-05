@@ -10,29 +10,15 @@ struct pim447_config {
     uint8_t i2c_addr;
 };
 
-
-
 int pim447_init(const struct device *dev)
 {
     const struct pim447_config *config = dev->config;
-
-    LOG_INF("PIM447 init start");
-
-    if (!device_is_ready(config->i2c_dev)) {
-        LOG_ERR("I2C bus %s not ready", config->i2c_dev->name);
-        return -ENODEV;
-    }
+    struct pim447_data *data = dev->data;
 
     LOG_INF("PIM447 I2C device: %s", config->i2c_dev->name);
     LOG_INF("PIM447 I2C address: 0x%02x", config->i2c_addr);
 
-    // Delay for 10 seconds
-    LOG_INF("Waiting for 10 seconds...");
-    k_sleep(K_SECONDS(10));
-    LOG_INF("Wait complete, attempting I2C write");
 
-
-    LOG_INF("PIM447 init complete");
     return 0;
 }
 
