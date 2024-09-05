@@ -26,7 +26,7 @@ static int write_i2c_register(const struct device *dev, uint8_t reg_addr, uint8_
     return i2c_write(config->i2c_dev, buf, sizeof(buf), config->i2c_addr);
 }
 
-static int pim447_init(const struct device *dev)
+int pim447_init(const struct device *dev)
 {
     const struct pim447_config *config = dev->config;
 
