@@ -10,21 +10,7 @@ struct pim447_config {
     uint8_t i2c_addr;
 };
 
-static int write_i2c_register(const struct device *dev, uint8_t reg_addr, uint8_t data)
-{
-    const struct pim447_config *config = dev->config;
-    uint8_t buf[2];
 
-    if (!device_is_ready(config->i2c_dev)) {
-        LOG_ERR("I2C device not ready");
-        return -ENODEV;
-    }
-
-    buf[0] = reg_addr;
-    buf[1] = data;
-
-    return i2c_write(config->i2c_dev, buf, sizeof(buf), config->i2c_addr);
-}
 
 int pim447_init(const struct device *dev)
 {
@@ -45,11 +31,6 @@ int pim447_init(const struct device *dev)
     k_sleep(K_SECONDS(10));
     LOG_INF("Wait complete, attempting I2C write");
 
-    int ret = write_i2c_register(dev, 0x03, 200);
-    if (ret != 0) {
-        LOG_ERR("Failed to write to I2C register, error: %d", ret);
-        return ret;
-    }
 
     LOG_INF("PIM447 init complete");
     return 0;
