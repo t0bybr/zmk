@@ -16,7 +16,7 @@ static int write_i2c_register(const struct device *dev, uint8_t reg_addr, uint8_
     uint8_t buf[2];
 
     if (!device_is_ready(config->i2c_dev)) {
-        printk("I2C device not ready\n");
+        LOG_ERR("I2C device not ready");
         return -ENODEV;
     }
 
@@ -26,7 +26,7 @@ static int write_i2c_register(const struct device *dev, uint8_t reg_addr, uint8_
     return i2c_write(config->i2c_dev, buf, sizeof(buf), config->i2c_addr);
 }
 
-int pim447_init(const struct device *dev)
+static int pim447_init(const struct device *dev)
 {
     const struct pim447_config *config = dev->config;
 
@@ -35,7 +35,8 @@ int pim447_init(const struct device *dev)
 
     int ret = write_i2c_register(dev, 0x03, 200);
     if (ret != 0) {
-        printk("Failed to write to I2C register\n");
+        LOG_ERR("Failed to write to I2C register");
+        return ret;
     }
 
     return 0;
