@@ -33,6 +33,11 @@ int pim447_init(const struct device *dev)
     LOG_ERR("PIM447 I2C device: %s", config->i2c_dev->name);
     LOG_ERR("PIM447 I2C address: 0x%02x", config->i2c_addr);
 
+    // Delay for 10 seconds
+    k_sleep(K_SECONDS(10));
+
+
+
     int ret = write_i2c_register(dev, 0x03, 200);
     if (ret != 0) {
         LOG_ERR("Failed to write to I2C register");
