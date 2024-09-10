@@ -14,16 +14,9 @@ struct pim447_config {
 
 static int write_register(const struct device *dev, uint8_t reg, uint16_t value)
 {
-    if (k_is_in_isr()) {
-        return -EWOULDBLOCK;
-    }
-
     const struct pim447_config *config = dev->config;
 
-    uint8_t data[2];
-    sys_put_be16(value, data);
-
-    return i2c_burst_write(config->i2c_dev, config->i2c_addr, reg, data, sizeof(data));
+    return i2c_burst_write(config->i2c_dev, config->i2c_addr, reg, value, sizeof(value));
 }
 
 int pim447_init(const struct device *dev)
