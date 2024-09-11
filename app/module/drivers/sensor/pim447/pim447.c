@@ -13,6 +13,15 @@ struct pim447_config {
     uint8_t i2c_addr;
 };
 
+// Function to write a single byte to the Pim447
+static int pim447_write_byte(const struct device *dev, uint8_t reg_addr, uint8_t data) 
+{
+    const struct pim447_config *config = dev->config;
+    uint8_t tx_buf[2] = {reg_addr, data};
+
+    return i2c_write(config->i2c_dev, tx_buf, sizeof(tx_buf), config->i2c_addr);
+}
+
 
 int pim447_init(const struct device *dev)
 {
@@ -22,6 +31,13 @@ int pim447_init(const struct device *dev)
     LOG_INF("PIM447 I2C device: %s", config->i2c_dev->name);
     LOG_INF("PIM447 I2C address: 0x%02x", config->i2c_addr);
     LOG_INF("PIM447 initialized");
+
+    // Light up the LED (adjust brightness as needed)
+    int ret = pim447_write_byte(dev, 0x03, 0xFF); // Full brightness
+    if (ret < 0) {
+        LOG_ERR("Failed to write to Pim447 LED register");
+        return ret;
+    }
 
     return 0;
 }
