@@ -2,6 +2,8 @@
 
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
+#include <zephyr/device.h>
+#include <zephyr/devicetree.h>
 #include <zephyr/drivers/i2c.h>
 
 #include "pim447.h"
@@ -13,14 +15,27 @@ struct pim447_config {
     uint8_t i2c_addr;
 };
 
-// Function to write a single byte to the Pim447
-static int pim447_write_byte(const struct device *dev, uint8_t reg_addr, uint8_t data) 
-{
-    const struct pim447_config *config = dev->config;
-    uint8_t tx_buf[2] = {reg_addr, data};
+void write_led_brightness(const struct device *dev, uint8_t brightness_value) {
+    if (!dev) {
+        printk("I2C: Device not found\n");
+        return;
+    }
 
-    return i2c_write(config->i2c_dev, tx_buf, sizeof(tx_buf), config->i2c_addr);
+    uint8_t reg = 0x03;  // LED control register
+    uint8_t data[2];
+
+    data[0] = reg;              // First byte is the register address
+    data[1] = brightness_value; // Second byte is the value to write (brightness)
+
+    // Perform the I2C write
+    int ret = i2c_write(dev, data, sizeof(data), TRACKBALL_I2C_ADDRESS);
+    if (ret != 0) {
+        printk("Error writing to the trackball: %d\n", ret);
+    } else {
+        printk("LED brightness set to %d\n", brightness_value);
+    }
 }
+
 
 
 int pim447_init(const struct device *dev)
@@ -32,12 +47,7 @@ int pim447_init(const struct device *dev)
     LOG_INF("PIM447 I2C address: 0x%02x", config->i2c_addr);
     LOG_INF("PIM447 initialized");
 
-    // Light up the LED (adjust brightness as needed)
-    int ret = pim447_write_byte(dev, 0x03, 0xFF); // Full brightness
-    if (ret < 0) {
-        LOG_ERR("Failed to write to Pim447 LED register");
-        return ret;
-    }
+    write_led_brightness(i2c_dev, 150);
 
     return 0;
 }
