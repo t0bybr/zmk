@@ -23,7 +23,12 @@ int pim447_init(const struct device *dev)
     LOG_INF("PIM447 I2C device: %s", config->i2c_dev->name);
     LOG_INF("PIM447 I2C address: 0x%02x", config->i2c_addr);
     LOG_INF("PIM447 initialized");
-\
+
+    if (!device_is_ready(config->i2c_dev)) {
+        LOG_ERR("I2C device not ready");
+        return -EIO;
+    }
+
     return 0;
 }
 
