@@ -13,6 +13,30 @@ struct pim447_config {
     uint8_t i2c_addr;
 };
 
+void test_basic_i2c_write(void) {
+    const struct device *i2c_dev = device_get_binding("I2C_1");  // Adjust I2C bus name
+    uint8_t reg = 0x03;
+    uint8_t brightness = 150;
+    uint8_t data[2] = { reg, brightness };
+
+    if (!i2c_dev) {
+        printk("I2C device not found\n");
+        return;
+    }
+
+    if (!device_is_ready(i2c_dev)) {
+        printk("I2C device not ready\n");
+        return;
+    }
+
+    // Perform the I2C write
+    int ret = i2c_write(i2c_dev, data, sizeof(data), 0x0A);  // Replace with your address
+    if (ret != 0) {
+        printk("I2C write failed: %d\n", ret);
+    } else {
+        printk("I2C write successful\n");
+    }
+}
 
 
 int pim447_init(const struct device *dev)
@@ -24,25 +48,8 @@ int pim447_init(const struct device *dev)
     LOG_INF("PIM447 I2C address: 0x%02x", config->i2c_addr);
     LOG_INF("PIM447 initialized");
 
-    if (!device_is_ready(config->i2c_dev)) {
-        LOG_ERR("I2C device %s not ready", config->i2c_dev->name);
-        return;
-    }
+    test_basic_i2c_write();
 
-    uint8_t data[2];
-    data[0] = 0x03;
-    data[1] = 150;
-
-    // Optional: Introduce a short delay to avoid timing issues
-    k_msleep(1);
-
-    // Perform the I2C write and check for errors
-    int ret = i2c_write_dt(config->i2c_dev, data, sizeof(data), config->i2c_addr);
-    if (ret != 0) {
-        LOG_ERR("I2C write failed with error %d", ret);
-    } else {
-        LOG_INF("LED brightness set to %d", 150);
-    }
 
     return 0;
 }
