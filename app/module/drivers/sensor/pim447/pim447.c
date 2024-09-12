@@ -36,7 +36,7 @@ void test_basic_i2c_write(const struct device *i2c_dev) {
     msg.len = sizeof(data);
     msg.flags = I2C_MSG_WRITE;
 
-    int ret = i2c_transfer(i2c_dev, &msg, 1, config->i2c_addr);
+    int ret = i2c_transfer(i2c_dev, &msg, 1, 0x0a);
     if (ret != 0) {
         LOG_INF("I2C transfer failed with error %d\n", ret);
     } else {
