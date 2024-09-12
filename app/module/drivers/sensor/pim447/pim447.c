@@ -15,29 +15,6 @@ struct pim447_config {
     uint8_t i2c_addr;
 };
 
-void write_led_brightness(const struct device *dev, uint8_t brightness_value) {
-
-
-    if (!dev) {
-        printk("I2C: Device not found\n");
-        return;
-    }
-
-    uint8_t reg = 0x03;  // LED control register
-    uint8_t data[2];
-
-    data[0] = reg;              // First byte is the register address
-    data[1] = brightness_value; // Second byte is the value to write (brightness)
-
-    // Perform the I2C write
-    int ret = i2c_write(dev, data, sizeof(data), 0x0a);
-    if (ret != 0) {
-        printk("Error writing to the trackball: %d\n", ret);
-    } else {
-        printk("LED brightness set to %d\n", brightness_value);
-    }
-}
-
 
 
 int pim447_init(const struct device *dev)
@@ -49,7 +26,14 @@ int pim447_init(const struct device *dev)
     LOG_INF("PIM447 I2C address: 0x%02x", config->i2c_addr);
     LOG_INF("PIM447 initialized");
 
-    write_led_brightness(config->i2c_dev, 150);
+
+    uint8_t data[2];
+
+    data[0] = reg;              // First byte is the register address
+    data[1] = 150; // Second byte is the value to write (brightness)
+
+    // Perform the I2C write
+    int ret = i2c_write(dev, data, sizeof(data), config->i2c_addr);
 
     return 0;
 }
