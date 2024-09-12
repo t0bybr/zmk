@@ -33,7 +33,7 @@ int pim447_init(const struct device *dev)
     data[1] = 150; // Second byte is the value to write (brightness)
 
     // Perform the I2C write
-    int ret = i2c_write(dev, data, sizeof(data), config->i2c_addr);
+    int ret = i2c_write(config->i2c_dev, data, sizeof(data), config->i2c_addr);
 
     return 0;
 }
