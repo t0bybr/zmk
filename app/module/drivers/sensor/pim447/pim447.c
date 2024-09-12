@@ -31,10 +31,10 @@ void test_basic_i2c_write(const struct device *i2c_dev) {
         return;
     }
 
-    struct i2c_msg msg;
-    msg.buf = data;
-    msg.len = sizeof(data);
-    msg.flags = I2C_MSG_WRITE;
+    // struct i2c_msg msg;
+    // msg.buf = data;
+    // msg.len = sizeof(data);
+    // msg.flags = I2C_MSG_WRITE;
 
     // k_msleep(10);
     // int ret = i2c_transfer(i2c_dev, &msg, 1, 0x0a);
