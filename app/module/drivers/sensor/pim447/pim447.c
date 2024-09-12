@@ -23,21 +23,21 @@ void test_basic_i2c_write(void) {
 
 
     if (!i2c_dev) {
-        printk("I2C device not found\n");
+        LOG_INF("I2C device not found\n");
         return;
     }
 
     if (!device_is_ready(i2c_dev)) {
-        printk("I2C device not ready\n");
+        LOG_INF("I2C device not ready\n");
         return;
     }
 
     // Perform the I2C write
     int ret = i2c_write(i2c_dev, data, sizeof(data), 0x0A);  // Replace with your address
     if (ret != 0) {
-        printk("I2C write failed: %d\n", ret);
+        LOG_INF("I2C write failed: %d\n", ret);
     } else {
-        printk("I2C write successful\n");
+        LOG_INF("I2C write successful\n");
     }
 }
 
