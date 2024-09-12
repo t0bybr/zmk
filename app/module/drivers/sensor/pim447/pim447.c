@@ -13,7 +13,7 @@ struct pim447_config {
     uint8_t i2c_addr;
 };
 
-void test_basic_i2c_write(void) {
+void test_basic_i2c_write(const struct device *i2c_dev) {
     const struct device *i2c_dev = device_get_binding("I2C_1");  // Adjust I2C bus name
     uint8_t reg = 0x03;
     uint8_t brightness = 150;
@@ -51,7 +51,7 @@ int pim447_init(const struct device *dev)
     LOG_INF("PIM447 I2C address: 0x%02x", config->i2c_addr);
     LOG_INF("PIM447 initialized");
 
-    test_basic_i2c_write();
+    test_basic_i2c_write(config->i2c_dev);
 
 
     return 0;
