@@ -37,7 +37,7 @@ int pim447_init(const struct device *dev)
     k_msleep(1);
 
     // Perform the I2C write and check for errors
-    int ret = i2c_write_dt(&i2c_cfg_dev, data, sizeof(data), config->i2c_addr);
+    int ret = i2c_write_dt(config->i2c_dev, data, sizeof(data), config->i2c_addr);
     if (ret != 0) {
         LOG_ERR("I2C write failed with error %d", ret);
     } else {
