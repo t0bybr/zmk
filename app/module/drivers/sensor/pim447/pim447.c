@@ -32,12 +32,12 @@ void test_basic_i2c_write(const struct device *i2c_dev) {
     }
 
     // Perform the I2C write
-    int ret = i2c_write(i2c_dev, data, sizeof(data), 0x0A);  // Replace with your address
-    if (ret != 0) {
-        LOG_INF("I2C write failed: %d\n", ret);
-    } else {
-        LOG_INF("I2C write successful\n");
-    }
+    // int ret = i2c_write(i2c_dev, data, sizeof(data), 0x0A);  // Replace with your address
+    // if (ret != 0) {
+    //     LOG_INF("I2C write failed: %d\n", ret);
+    // } else {
+    //     LOG_INF("I2C write successful\n");
+    // }
 }
 
 
