@@ -23,15 +23,15 @@ int pim447_init(const struct device *dev)
     LOG_INF("PIM447 I2C device: %s", config->i2c_dev->name);
     LOG_INF("PIM447 I2C address: 0x%02x", config->i2c_addr);
     LOG_INF("PIM447 initialized");
-// Check if I2C device is ready
+
     if (!device_is_ready(config->i2c_dev)) {
         LOG_ERR("I2C device %s not ready", config->i2c_dev->name);
         return;
     }
 
     uint8_t data[2];
-    data[0] = 0x03;              // LED control register
-    data[1] = brightness_value;   // Value to write (brightness)
+    data[0] = 0x03;
+    data[1] = 150;
 
     // Optional: Introduce a short delay to avoid timing issues
     k_msleep(1);
@@ -41,7 +41,7 @@ int pim447_init(const struct device *dev)
     if (ret != 0) {
         LOG_ERR("I2C write failed with error %d", ret);
     } else {
-        LOG_INF("LED brightness set to %d", brightness_value);
+        LOG_INF("LED brightness set to %d", 150);
     }
 
     return 0;
