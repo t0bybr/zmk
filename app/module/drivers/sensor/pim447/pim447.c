@@ -14,7 +14,6 @@ struct pim447_config {
 };
 
 void test_basic_i2c_write(const struct device *i2c_dev) {
-    const struct device *i2c_dev = device_get_binding("I2C_1");  // Adjust I2C bus name
     uint8_t reg = 0x03;
     uint8_t brightness = 150;
     uint8_t data[2] = { reg, brightness };
