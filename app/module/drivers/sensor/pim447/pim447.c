@@ -29,7 +29,7 @@ int pim447_init(const struct device *dev)
 
     uint8_t data[2];
 
-    data[0] = reg;              // First byte is the register address
+    data[0] = 0x03;              // First byte is the register address
     data[1] = 150; // Second byte is the value to write (brightness)
 
     // Perform the I2C write
