@@ -17,7 +17,6 @@ struct pim447_config {
 
 void write_led_brightness(const struct device *dev, uint8_t brightness_value) {
 
-    const struct pim447_config *config = dev->config;
 
     if (!dev) {
         printk("I2C: Device not found\n");
@@ -31,7 +30,7 @@ void write_led_brightness(const struct device *dev, uint8_t brightness_value) {
     data[1] = brightness_value; // Second byte is the value to write (brightness)
 
     // Perform the I2C write
-    int ret = i2c_write(dev, data, sizeof(data), config->i2c_addr);
+    int ret = i2c_write(dev, data, sizeof(data), 0x0a);
     if (ret != 0) {
         printk("Error writing to the trackball: %d\n", ret);
     } else {
