@@ -23,16 +23,7 @@ int pim447_init(const struct device *dev)
     LOG_INF("PIM447 I2C device: %s", config->i2c_dev->name);
     LOG_INF("PIM447 I2C address: 0x%02x", config->i2c_addr);
     LOG_INF("PIM447 initialized");
-
-
-    uint8_t data[2];
-
-    data[0] = 0x03;              // First byte is the register address
-    data[1] = 150; // Second byte is the value to write (brightness)
-
-    // Perform the I2C write
-    int ret = i2c_write(config->i2c_dev, data, sizeof(data), config->i2c_addr);
-
+\
     return 0;
 }
 
