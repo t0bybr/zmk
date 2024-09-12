@@ -19,6 +19,9 @@ void test_basic_i2c_write(void) {
     uint8_t brightness = 150;
     uint8_t data[2] = { reg, brightness };
 
+    LOG_INF("In test_basic_i2c_write");
+
+
     if (!i2c_dev) {
         printk("I2C device not found\n");
         return;
