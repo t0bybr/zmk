@@ -50,7 +50,7 @@ int pim447_init(const struct device *dev)
     LOG_INF("PIM447 I2C address: 0x%02x", config->i2c_addr);
     LOG_INF("PIM447 initialized");
 
-    write_led_brightness(i2c_dev, 150);
+    write_led_brightness(config->i2c_dev, 150);
 
     return 0;
 }
