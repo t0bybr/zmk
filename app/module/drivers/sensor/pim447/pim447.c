@@ -68,7 +68,7 @@ static void pimoroni_pim447_work_handler(struct k_work *work) {
 #ifdef CONFIG_ZMK_SENSOR_PIMORONI_PIM447_INTERRUPT
 static void pimoroni_pim447_gpio_callback(const struct device *dev, struct gpio_callback *cb, uint32_t pins) {
     struct pimoroni_pim447_data *data = CONTAINER_OF(cb, struct pimoroni_pim447_data, int_gpio_cb);
-    const struct pimoroni_trackball_config *cfg = dev->config;
+    const struct pimoroni_pim447_config *cfg = dev->config;
 
     /* Clear the interrupt flag on the device if necessary */
     uint8_t int_reg;
@@ -149,7 +149,7 @@ static int pimoroni_pim447_init(const struct device *dev) {
 
 int pimoroni_pim447_led_set(const struct device *dev, uint8_t red, uint8_t green, uint8_t blue, uint8_t white) {
     struct pimoroni_pim447_data *data = dev->data;
-	const struct pimoroni_trackball_config *cfg = dev->config;
+	const struct pimoroni_pim447_config *cfg = dev->config;
 
     uint8_t buf[4] = { red, green, blue, white };
     int ret;
