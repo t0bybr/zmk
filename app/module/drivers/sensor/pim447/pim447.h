@@ -1,11 +1,11 @@
 #ifndef ZMK__DRIVERS__SENSORS__PIMORONI_PIM447_H
 #define ZMK__DRIVERS__SENSORS__PIMORONI_PIM447_H
 
-#include <zephyr/device.h>
-#include <zephyr/drivers/gpio.h>
-#include <zephyr/drivers/i2c.h>
-#include <zephyr/drivers/sensor.h>
-#include <zephyr/sys/util.h>
+#include <device.h>
+#include <drivers/gpio.h>
+#include <drivers/i2c.h>
+#include <drivers/sensor.h>
+#include <sys/util.h>
 
 /* Register Addresses */
 #define REG_LED_RED     0x00
@@ -40,19 +40,17 @@
 #define MSK_CTRL_FWRITE     0b00001000
 
 struct pimoroni_pim447_config {
-    const char *i2c_bus_label;
+    const struct device *i2c_bus;
     uint16_t i2c_addr;
 #ifdef CONFIG_ZMK_SENSOR_PIMORONI_PIM447_INTERRUPT
-    const char *int_gpio_port;
-    gpio_pin_t int_gpio_pin;
-    gpio_flags_t int_gpio_flags;
+    const struct gpio_dt_spec int_gpio;
 #endif
 };
 
 struct pimoroni_pim447_data {
     const struct device *i2c_dev;
+    const struct device *dev;  // Added to store the device pointer
 #ifdef CONFIG_ZMK_SENSOR_PIMORONI_PIM447_INTERRUPT
-    const struct device *int_gpio_dev;
     struct gpio_callback int_gpio_cb;
 #endif
     struct k_work work;

@@ -1,9 +1,8 @@
-#define DT_DRV_COMPAT pimoroni_pim447
-#include "pim447.h"
-#include <zephyr/drivers/sensor.h>
-#include <zephyr/drivers/i2c.h>
-#include <zephyr/logging/log.h>
-#include <zephyr/kernel.h>
+#include "pimoroni_pim447.h"
+#include <drivers/sensor.h>
+#include <drivers/i2c.h>
+#include <logging/log.h>
+#include <zephyr.h>
 
 LOG_MODULE_REGISTER(pimoroni_pim447, CONFIG_SENSOR_LOG_LEVEL);
 
@@ -12,15 +11,14 @@ LOG_MODULE_REGISTER(pimoroni_pim447, CONFIG_SENSOR_LOG_LEVEL);
 
 static int pimoroni_pim447_sample_fetch(const struct device *dev, enum sensor_channel chan) {
     struct pimoroni_pim447_data *data = dev->data;
-	const struct pimoroni_pim447_config *cfg = dev->config;  // Get the config
-
+    const struct pimoroni_pim447_config *cfg = dev->config;
     uint8_t buf[5];
     int ret;
 
     /* Read movement data and switch state */
     ret = i2c_burst_read(data->i2c_dev, cfg->i2c_addr, REG_LEFT, buf, 5);
     if (ret) {
-        LOG_ERR("Failed to read movement data from pim447");
+        LOG_ERR("Failed to read movement data from PIM447");
         return ret;
     }
 
@@ -59,28 +57,15 @@ static int pimoroni_pim447_channel_get(const struct device *dev, enum sensor_cha
 static void pimoroni_pim447_work_handler(struct k_work *work) {
     struct pimoroni_pim447_data *data = CONTAINER_OF(work, struct pimoroni_pim447_data, work);
 
-    if (pimoroni_pim447_sample_fetch(data->i2c_dev, SENSOR_CHAN_ALL) == 0) {
+    if (pimoroni_pim447_sample_fetch(data->dev, SENSOR_CHAN_ALL) == 0) {
         // Process the data or generate an event
         // Integrate with ZMK's sensor framework to emit HID reports
     }
 }
 
 #ifdef CONFIG_ZMK_SENSOR_PIMORONI_PIM447_INTERRUPT
-static void pimoroni_pim447_gpio_callback(const struct device *dev, struct gpio_callback *cb, uint32_t pins) {
+static void pimoroni_pim447_gpio_callback(const struct device *port, struct gpio_callback *cb, gpio_port_pins_t pins) {
     struct pimoroni_pim447_data *data = CONTAINER_OF(cb, struct pimoroni_pim447_data, int_gpio_cb);
-    const struct pimoroni_pim447_config *cfg = dev->config;
-
-    /* Clear the interrupt flag on the device if necessary */
-    uint8_t int_reg;
-    if (i2c_reg_read_byte(data->i2c_dev, cfg->i2c_addr, REG_INT, &int_reg)) {
-        LOG_ERR("Failed to read INT register");
-        return;
-    }
-    int_reg &= ~MSK_INT_TRIGGERED;
-    if (i2c_reg_write_byte(data->i2c_dev, cfg->i2c_addr, REG_INT, int_reg)) {
-        LOG_ERR("Failed to clear INT flag");
-        return;
-    }
 
     k_work_submit(&data->work);
 }
@@ -92,11 +77,13 @@ static int pimoroni_pim447_init(const struct device *dev) {
     uint8_t chip_id_l, chip_id_h;
     uint16_t chip_id;
 
-    data->i2c_dev = device_get_binding(cfg->i2c_bus_label);
-    if (!data->i2c_dev) {
-        LOG_ERR("Failed to get I2C device");
+    data->i2c_dev = cfg->i2c_bus;
+    if (!device_is_ready(data->i2c_dev)) {
+        LOG_ERR("I2C bus device is not ready");
         return -EINVAL;
     }
+
+    data->dev = dev;  // Store the device pointer for use in work handler
 
     /* Read Chip ID */
     if (i2c_reg_read_byte(data->i2c_dev, cfg->i2c_addr, REG_CHIP_ID_L, &chip_id_l) ||
@@ -110,22 +97,32 @@ static int pimoroni_pim447_init(const struct device *dev) {
         return -EINVAL;
     }
 
-    LOG_INF("Pimoroni Trackball detected, chip ID: 0x%04X", chip_id);
+    LOG_INF("Pimoroni PIM447 detected, chip ID: 0x%04X", chip_id);
 
 #ifdef CONFIG_ZMK_SENSOR_PIMORONI_PIM447_INTERRUPT
-    if (cfg->int_gpio_port) {
-        data->int_gpio_dev = device_get_binding(cfg->int_gpio_port);
-        if (!data->int_gpio_dev) {
-            LOG_ERR("Failed to get GPIO device for interrupts");
-            return -EINVAL;
+    if (device_is_ready(cfg->int_gpio.port)) {
+        int ret;
+
+        ret = gpio_pin_configure_dt(&cfg->int_gpio, GPIO_INPUT);
+        if (ret) {
+            LOG_ERR("Failed to configure interrupt GPIO");
+            return ret;
         }
 
-        gpio_pin_configure(data->int_gpio_dev, cfg->int_gpio_pin, GPIO_INPUT | cfg->int_gpio_flags);
-        gpio_pin_interrupt_configure(data->int_gpio_dev, cfg->int_gpio_pin, GPIO_INT_EDGE_TO_ACTIVE);
-        gpio_init_callback(&data->int_gpio_cb, pimoroni_pim447_gpio_callback, BIT(cfg->int_gpio_pin));
-        gpio_add_callback(data->int_gpio_dev, &data->int_gpio_cb);
+        gpio_init_callback(&data->int_gpio_cb, pimoroni_pim447_gpio_callback, BIT(cfg->int_gpio.pin));
+        ret = gpio_add_callback(cfg->int_gpio.port, &data->int_gpio_cb);
+        if (ret) {
+            LOG_ERR("Failed to add GPIO callback");
+            return ret;
+        }
 
-        /* Enable interrupt output on the pim447 */
+        ret = gpio_pin_interrupt_configure_dt(&cfg->int_gpio, GPIO_INT_EDGE_TO_ACTIVE);
+        if (ret) {
+            LOG_ERR("Failed to configure GPIO interrupt");
+            return ret;
+        }
+
+        /* Enable interrupt output on the trackball */
         uint8_t int_reg;
         if (i2c_reg_read_byte(data->i2c_dev, cfg->i2c_addr, REG_INT, &int_reg)) {
             LOG_ERR("Failed to read INT register");
@@ -136,21 +133,23 @@ static int pimoroni_pim447_init(const struct device *dev) {
             LOG_ERR("Failed to enable interrupt output");
             return -EIO;
         }
+    } else {
+        LOG_ERR("Interrupt GPIO device is not ready");
+        return -EINVAL;
     }
 #endif
 
     k_work_init(&data->work, pimoroni_pim447_work_handler);
 
     /* Optionally, initialize the LED to a default state */
-    pimoroni_pim447_led_set(dev, 0, 0, 0, 200); // Turn off the LED initially
+    pimoroni_pim447_led_set(dev, 0, 0, 0, 0); // Turn off the LED initially
 
     return 0;
 }
 
 int pimoroni_pim447_led_set(const struct device *dev, uint8_t red, uint8_t green, uint8_t blue, uint8_t white) {
     struct pimoroni_pim447_data *data = dev->data;
-	const struct pimoroni_pim447_config *cfg = dev->config;
-
+    const struct pimoroni_pim447_config *cfg = dev->config;
     uint8_t buf[4] = { red, green, blue, white };
     int ret;
 
@@ -166,8 +165,8 @@ int pimoroni_pim447_led_set(const struct device *dev, uint8_t red, uint8_t green
 }
 
 int pimoroni_pim447_set_red(const struct device *dev, uint8_t value) {
-	 const struct pimoroni_pim447_config *cfg = dev->config;
     struct pimoroni_pim447_data *data = dev->data;
+    const struct pimoroni_pim447_config *cfg = dev->config;
     int ret;
 
     ret = i2c_reg_write_byte(data->i2c_dev, cfg->i2c_addr, REG_LED_RED, value);
@@ -178,8 +177,8 @@ int pimoroni_pim447_set_red(const struct device *dev, uint8_t value) {
 }
 
 int pimoroni_pim447_set_green(const struct device *dev, uint8_t value) {
-	 const struct pimoroni_pim447_config *cfg = dev->config;
     struct pimoroni_pim447_data *data = dev->data;
+    const struct pimoroni_pim447_config *cfg = dev->config;
     int ret;
 
     ret = i2c_reg_write_byte(data->i2c_dev, cfg->i2c_addr, REG_LED_GRN, value);
@@ -190,8 +189,8 @@ int pimoroni_pim447_set_green(const struct device *dev, uint8_t value) {
 }
 
 int pimoroni_pim447_set_blue(const struct device *dev, uint8_t value) {
-	 const struct pimoroni_pim447_config *cfg = dev->config;
     struct pimoroni_pim447_data *data = dev->data;
+    const struct pimoroni_pim447_config *cfg = dev->config;
     int ret;
 
     ret = i2c_reg_write_byte(data->i2c_dev, cfg->i2c_addr, REG_LED_BLU, value);
@@ -202,8 +201,8 @@ int pimoroni_pim447_set_blue(const struct device *dev, uint8_t value) {
 }
 
 int pimoroni_pim447_set_white(const struct device *dev, uint8_t value) {
-	 const struct pimoroni_pim447_config *cfg = dev->config;
     struct pimoroni_pim447_data *data = dev->data;
+    const struct pimoroni_pim447_config *cfg = dev->config;
     int ret;
 
     ret = i2c_reg_write_byte(data->i2c_dev, cfg->i2c_addr, REG_LED_WHT, value);
@@ -219,16 +218,20 @@ static const struct sensor_driver_api pimoroni_pim447_driver_api = {
 };
 
 static const struct pimoroni_pim447_config pimoroni_pim447_config = {
-    .i2c_bus_label = DT_INST_BUS_LABEL(0),
+    .i2c_bus = DEVICE_DT_GET(DT_BUS(DT_NODELABEL(pimoroni_pim447))),
     .i2c_addr = PIMORONI_PIM447_I2C_ADDRESS,
 #ifdef CONFIG_ZMK_SENSOR_PIMORONI_PIM447_INTERRUPT
-    .int_gpio_port = DT_INST_GPIO_LABEL(0, int_gpios),
-    .int_gpio_pin = DT_INST_GPIO_PIN(0, int_gpios),
-    .int_gpio_flags = DT_INST_GPIO_FLAGS(0, int_gpios),
+    .int_gpio = GPIO_DT_SPEC_GET(DT_NODELABEL(pimoroni_pim447), int_gpios),
 #endif
 };
 
 static struct pimoroni_pim447_data pimoroni_pim447_data;
 
-DEVICE_DT_INST_DEFINE(0, pimoroni_pim447_init, NULL, &pimoroni_pim447_data, &pimoroni_pim447_config,
-                      POST_KERNEL, CONFIG_SENSOR_INIT_PRIORITY, &pimoroni_pim447_driver_api);
+DEVICE_DT_DEFINE(DT_NODELABEL(pimoroni_pim447),
+                 pimoroni_pim447_init,
+                 NULL,
+                 &pimoroni_pim447_data,
+                 &pimoroni_pim447_config,
+                 POST_KERNEL,
+                 CONFIG_SENSOR_INIT_PRIORITY,
+                 &pimoroni_pim447_driver_api);
