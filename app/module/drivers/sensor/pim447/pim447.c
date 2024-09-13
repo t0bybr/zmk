@@ -1,8 +1,8 @@
 #define DT_DRV_COMPAT pimoroni_pim447
 #include "pim447.h"
-#include <drivers/sensor.h>
-#include <drivers/i2c.h>
-#include <logging/log.h>
+#include <zephyr/drivers/sensor.h>
+#include <zephyr/drivers/i2c.h>
+#include <zephyr/logging/log.h>
 #include <zephyr.h>
 
 LOG_MODULE_REGISTER(pimoroni_pim447, CONFIG_SENSOR_LOG_LEVEL);

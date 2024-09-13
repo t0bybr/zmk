@@ -1,11 +1,11 @@
 #ifndef ZMK__DRIVERS__SENSORS__PIMORONI_PIM447_H
 #define ZMK__DRIVERS__SENSORS__PIMORONI_PIM447_H
 
-#include <device.h>
-#include <drivers/gpio.h>
-#include <drivers/i2c.h>
-#include <drivers/sensor.h>
-#include <sys/util.h>
+#include <zephyr/device.h>
+#include <zephyr/drivers/gpio.h>
+#include <zephyr/drivers/i2c.h>
+#include <zephyr/drivers/sensor.h>
+#include <zephyr/sys/util.h>
 
 /* Register Addresses */
 #define REG_LED_RED     0x00
