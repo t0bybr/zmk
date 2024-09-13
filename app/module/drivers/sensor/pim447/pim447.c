@@ -3,7 +3,7 @@
 #include <zephyr/drivers/sensor.h>
 #include <zephyr/drivers/i2c.h>
 #include <zephyr/logging/log.h>
-#include <zephyr/zephyr.h>
+#include <zephyr/kernel.h>
 
 LOG_MODULE_REGISTER(pimoroni_pim447, CONFIG_SENSOR_LOG_LEVEL);
 
@@ -12,11 +12,13 @@ LOG_MODULE_REGISTER(pimoroni_pim447, CONFIG_SENSOR_LOG_LEVEL);
 
 static int pimoroni_pim447_sample_fetch(const struct device *dev, enum sensor_channel chan) {
     struct pimoroni_pim447_data *data = dev->data;
+	const struct pimoroni_pim447_config *cfg = dev->config;  // Get the config
+
     uint8_t buf[5];
     int ret;
 
     /* Read movement data and switch state */
-    ret = i2c_burst_read(data->i2c_dev, data->i2c_addr, REG_LEFT, buf, 5);
+    ret = i2c_burst_read(data->i2c_dev, cfg->i2c_addr, REG_LEFT, buf, 5);
     if (ret) {
         LOG_ERR("Failed to read movement data from pim447");
         return ret;
@@ -66,15 +68,16 @@ static void pimoroni_pim447_work_handler(struct k_work *work) {
 #ifdef CONFIG_ZMK_SENSOR_PIMORONI_PIM447_INTERRUPT
 static void pimoroni_pim447_gpio_callback(const struct device *dev, struct gpio_callback *cb, uint32_t pins) {
     struct pimoroni_pim447_data *data = CONTAINER_OF(cb, struct pimoroni_pim447_data, int_gpio_cb);
+    const struct pimoroni_trackball_config *cfg = dev->config;
 
     /* Clear the interrupt flag on the device if necessary */
     uint8_t int_reg;
-    if (i2c_reg_read_byte(data->i2c_dev, data->i2c_addr, REG_INT, &int_reg)) {
+    if (i2c_reg_read_byte(data->i2c_dev, cfg->i2c_addr, REG_INT, &int_reg)) {
         LOG_ERR("Failed to read INT register");
         return;
     }
     int_reg &= ~MSK_INT_TRIGGERED;
-    if (i2c_reg_write_byte(data->i2c_dev, data->i2c_addr, REG_INT, int_reg)) {
+    if (i2c_reg_write_byte(data->i2c_dev, cfg->i2c_addr, REG_INT, int_reg)) {
         LOG_ERR("Failed to clear INT flag");
         return;
     }
@@ -139,17 +142,19 @@ static int pimoroni_pim447_init(const struct device *dev) {
     k_work_init(&data->work, pimoroni_pim447_work_handler);
 
     /* Optionally, initialize the LED to a default state */
-    pimoroni_pim447_led_set(dev, 0, 0, 0, 0); // Turn off the LED initially
+    pimoroni_pim447_led_set(dev, 0, 0, 0, 200); // Turn off the LED initially
 
     return 0;
 }
 
 int pimoroni_pim447_led_set(const struct device *dev, uint8_t red, uint8_t green, uint8_t blue, uint8_t white) {
     struct pimoroni_pim447_data *data = dev->data;
+	const struct pimoroni_trackball_config *cfg = dev->config;
+
     uint8_t buf[4] = { red, green, blue, white };
     int ret;
 
-    ret = i2c_burst_write(data->i2c_dev, data->i2c_addr, REG_LED_RED, buf, 4);
+    ret = i2c_burst_write(data->i2c_dev, cfg->i2c_addr, REG_LED_RED, buf, 4);
     if (ret) {
         LOG_ERR("Failed to write LED control registers");
         return ret;
@@ -164,7 +169,7 @@ int pimoroni_pim447_set_red(const struct device *dev, uint8_t value) {
     struct pimoroni_pim447_data *data = dev->data;
     int ret;
 
-    ret = i2c_reg_write_byte(data->i2c_dev, data->i2c_addr, REG_LED_RED, value);
+    ret = i2c_reg_write_byte(data->i2c_dev, cfg->i2c_addr, REG_LED_RED, value);
     if (ret) {
         LOG_ERR("Failed to set red LED value");
     }
@@ -175,7 +180,7 @@ int pimoroni_pim447_set_green(const struct device *dev, uint8_t value) {
     struct pimoroni_pim447_data *data = dev->data;
     int ret;
 
-    ret = i2c_reg_write_byte(data->i2c_dev, data->i2c_addr, REG_LED_GRN, value);
+    ret = i2c_reg_write_byte(data->i2c_dev, cfg->i2c_addr, REG_LED_GRN, value);
     if (ret) {
         LOG_ERR("Failed to set green LED value");
     }
@@ -186,7 +191,7 @@ int pimoroni_pim447_set_blue(const struct device *dev, uint8_t value) {
     struct pimoroni_pim447_data *data = dev->data;
     int ret;
 
-    ret = i2c_reg_write_byte(data->i2c_dev, data->i2c_addr, REG_LED_BLU, value);
+    ret = i2c_reg_write_byte(data->i2c_dev, cfg->i2c_addr, REG_LED_BLU, value);
     if (ret) {
         LOG_ERR("Failed to set blue LED value");
     }
@@ -197,7 +202,7 @@ int pimoroni_pim447_set_white(const struct device *dev, uint8_t value) {
     struct pimoroni_pim447_data *data = dev->data;
     int ret;
 
-    ret = i2c_reg_write_byte(data->i2c_dev, data->i2c_addr, REG_LED_WHT, value);
+    ret = i2c_reg_write_byte(data->i2c_dev, cfg->i2c_addr, REG_LED_WHT, value);
     if (ret) {
         LOG_ERR("Failed to set white LED value");
     }
