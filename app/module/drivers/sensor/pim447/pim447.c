@@ -1,8 +1,10 @@
-#include "pimoroni_pim447.h"
-#include <drivers/sensor.h>
-#include <drivers/i2c.h>
-#include <logging/log.h>
-#include <zephyr.h>
+#define DT_DRV_COMPAT pimoroni_pim447
+
+#include "pim447.h"
+#include <zephyr/drivers/sensor.h>
+#include <zephyr/drivers/i2c.h>
+#include <zephyr/logging/log.h>
+#include <zephyr/kernel.h>
 
 LOG_MODULE_REGISTER(pimoroni_pim447, CONFIG_SENSOR_LOG_LEVEL);
 
@@ -218,20 +220,20 @@ static const struct sensor_driver_api pimoroni_pim447_driver_api = {
 };
 
 static const struct pimoroni_pim447_config pimoroni_pim447_config = {
-    .i2c_bus = DEVICE_DT_GET(DT_BUS(DT_NODELABEL(pimoroni_pim447))),
+    .i2c_bus = DEVICE_DT_GET(DT_BUS(DT_DRV_INST(0))),
     .i2c_addr = PIMORONI_PIM447_I2C_ADDRESS,
 #ifdef CONFIG_ZMK_SENSOR_PIMORONI_PIM447_INTERRUPT
-    .int_gpio = GPIO_DT_SPEC_GET(DT_NODELABEL(pimoroni_pim447), int_gpios),
+    .int_gpio = GPIO_DT_SPEC_INST_GET(0, int_gpios),
 #endif
 };
 
 static struct pimoroni_pim447_data pimoroni_pim447_data;
 
-DEVICE_DT_DEFINE(DT_NODELABEL(pimoroni_pim447),
-                 pimoroni_pim447_init,
-                 NULL,
-                 &pimoroni_pim447_data,
-                 &pimoroni_pim447_config,
-                 POST_KERNEL,
-                 CONFIG_SENSOR_INIT_PRIORITY,
-                 &pimoroni_pim447_driver_api);
+DEVICE_DT_INST_DEFINE(0,
+                     pimoroni_pim447_init,
+                     NULL,
+                     &pimoroni_pim447_data,
+                     &pimoroni_pim447_config,
+                     POST_KERNEL,
+                     CONFIG_SENSOR_INIT_PRIORITY,
+                     &pimoroni_pim447_driver_api);
