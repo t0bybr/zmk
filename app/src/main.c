@@ -22,6 +22,8 @@ LOG_MODULE_REGISTER(zmk, CONFIG_ZMK_LOG_LEVEL);
 int main(void) {
     LOG_INF("Welcome to ZMK!\n");
 
+    LOG_INF("hewwo!\n");
+
 
 #ifdef HAS_MOUSE_TP
     LOG_INF("Has Mouse TP\n");
