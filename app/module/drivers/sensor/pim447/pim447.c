@@ -79,6 +79,9 @@ static int pimoroni_pim447_init(const struct device *dev) {
     uint8_t chip_id_l, chip_id_h;
     uint16_t chip_id;
 
+    LOG_INF("Loading PIM447");
+
+
     data->i2c_dev = cfg->i2c_bus;
     if (!device_is_ready(data->i2c_dev)) {
         LOG_ERR("I2C bus device is not ready");
