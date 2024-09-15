@@ -18,8 +18,15 @@ LOG_MODULE_REGISTER(zmk, CONFIG_ZMK_LOG_LEVEL);
 #include <zmk/mouse.h>
 #endif /* CONFIG_ZMK_MOUSE */
 
+
 int main(void) {
     LOG_INF("Welcome to ZMK!\n");
+
+
+#ifdef HAS_MOUSE_TP
+    LOG_INF("Has Mouse TP\n");
+
+#endif
 
 #if IS_ENABLED(CONFIG_SETTINGS)
     settings_subsys_init();
