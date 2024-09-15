@@ -144,7 +144,7 @@ static int pimoroni_pim447_init(const struct device *dev) {
     k_work_init(&data->work, pimoroni_pim447_work_handler);
 
     /* Optionally, initialize the LED to a default state */
-    pimoroni_pim447_led_set(dev, 0, 0, 0, 100); // Turn off the LED initially
+    pimoroni_pim447_led_set(dev, 100, 0, 0, 100); // Turn off the LED initially
 
     return 0;
 }
